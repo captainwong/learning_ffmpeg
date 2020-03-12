@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001.extract_image_from_video", "001.extract_image_from_video\001.extract_image_from_video.vcxproj", "{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{55679794-6B01-49BA-BE31-6DF8D6E0F42D}"
+	ProjectSection(SolutionItems) = preProject
+		ffmpeg.h = ffmpeg.h
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Debug|x64.ActiveCfg = Debug|x64
+		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Debug|x64.Build.0 = Debug|x64
+		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Debug|x86.ActiveCfg = Debug|Win32
+		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Debug|x86.Build.0 = Debug|Win32
+		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Release|x64.ActiveCfg = Release|x64
+		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Release|x64.Build.0 = Release|x64
+		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Release|x86.ActiveCfg = Release|Win32
+		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EADECCAE-EDCF-4BB2-BC21-9FDB1AE3E440}
+	EndGlobalSection
+EndGlobal
