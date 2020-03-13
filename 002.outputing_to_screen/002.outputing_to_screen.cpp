@@ -18,6 +18,11 @@ int main()
 
 	av_register_all();
 
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
+		fprintf(stderr, "Could not initialize SDL - %s\n", SDL_GetError());
+		exit(1);
+	}
+
 	// open video file
 	AVFormatContext* fmtContext = nullptr;
 	if (avformat_open_input(&fmtContext, file_path, nullptr, nullptr) != 0) {
@@ -90,12 +95,7 @@ int main()
 											nullptr,
 											nullptr,
 											nullptr);
-
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
-		fprintf(stderr, "Could not initialize SDL - %s\n", SDL_GetError());
-		exit(1);
-	}
-
+	
 	SDL_Window* screen = SDL_CreateWindow("outputing to screen",
 										  SDL_WINDOWPOS_UNDEFINED,
 										  SDL_WINDOWPOS_UNDEFINED,
