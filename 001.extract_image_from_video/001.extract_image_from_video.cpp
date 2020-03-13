@@ -42,42 +42,14 @@ int main()
 		fprintf(stderr, "Could not find stream information\n");
 		exit(1);
 	}
-	av_dump_format(fmtContext, 0, file_path, 0);
 
-	// find the first video stream
 	int videoStream = -1;
-	for (int i = 0; i < fmtContext->nb_streams; i++) {
-		if (fmtContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
-			videoStream = i;
-			break;
-		}
-	}
-	if (videoStream == -1) {
+	AVCodecContext* codecContext = openCodecContext(fmtContext, AVMEDIA_TYPE_VIDEO, videoStream);
+	if (!codecContext) {
 		fprintf(stderr, "Could not find video stream\n");
 		exit(1);
 	}
-
-	// get a pointer to the codec context for the video stream
-	AVCodecContext* codecContextOrigin = fmtContext->streams[videoStream]->codec;
-	// find the decoder for the video stream
-	AVCodec* codec = avcodec_find_decoder(codecContextOrigin->codec_id);
-	if (!codec) {
-		fprintf(stderr, "Unsupported codec\n");
-		exit(1);
-	}
-
-	// copy context
-	AVCodecContext* codecContext = avcodec_alloc_context3(codec);
-	if (avcodec_copy_context(codecContext, codecContextOrigin) != 0) {
-		fprintf(stderr, "Couldn't copy codec context");
-		return -1;
-	}
-
-	// open codec
-	if (avcodec_open2(codecContext, codec, nullptr) < 0) {
-		fprintf(stderr, "Couldn't open codec");
-		return -1;
-	}
+	av_dump_format(fmtContext, 0, file_path, 0);
 
 	// allocate video frame
 	AVFrame* frame = av_frame_alloc();
@@ -130,7 +102,6 @@ int main()
 	av_free(buffer);
 	av_frame_free(&frameRGB);
 	av_frame_free(&frame);
-	avcodec_close(codecContext);
-	avcodec_close(codecContextOrigin);
+	avcodec_free_context(&codecContext);
 	avformat_close_input(&fmtContext);
 }

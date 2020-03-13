@@ -7,3 +7,8 @@
 
 #pragma comment(lib, SDL_LIB_PATH "SDL2main.lib")
 #pragma comment(lib, SDL_LIB_PATH "SDL2.lib")
+
+// undef SDL's micro
+#ifdef main
+#undef main
+#endif
