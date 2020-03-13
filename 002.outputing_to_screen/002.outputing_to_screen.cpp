@@ -1,0 +1,157 @@
+#include "../ffmpeg.h"
+#include "../sdl.h"
+
+#ifdef main
+#undef main
+#endif
+
+//constexpr int bpp = 12;
+//constexpr int pixel_w = 320, pixel_h = 180;
+//Uint8 buffer[pixel_w* pixel_h* bpp / 8];
+
+int main()
+{
+	// test_yuv420p_320x180.yuv
+	const char* file_path = R"(C:\Users\Jack\Videos\2020-01-16_20-13-52.mkv)";
+	//const char* file_path = R"(test_yuv420p_320x180.yuv)";
+
+	av_register_all();
+
+	// open video file
+	AVFormatContext* fmtContext = nullptr;
+	if (avformat_open_input(&fmtContext, file_path, nullptr, nullptr) != 0) {
+		fprintf(stderr, "Could not open source file %s\n", file_path);
+		exit(1);
+	}
+
+	// retrieve stream information
+	if (avformat_find_stream_info(fmtContext, nullptr) < 0) {
+		fprintf(stderr, "Could not find stream information\n");
+		exit(1);
+	}
+	av_dump_format(fmtContext, 0, file_path, 0);
+
+	// find the first video stream
+	int videoStream = -1;
+	for (int i = 0; i < fmtContext->nb_streams; i++) {
+		if (fmtContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+			videoStream = i;
+			break;
+		}
+	}
+	if (videoStream == -1) {
+		fprintf(stderr, "Could not find video stream\n");
+		exit(1);
+	}
+
+	// get a pointer to the codec context for the video stream
+	AVCodecContext* codecContextOrigin = fmtContext->streams[videoStream]->codec;
+	// find the decoder for the video stream
+	AVCodec* codec = avcodec_find_decoder(codecContextOrigin->codec_id);
+	if (!codec) {
+		fprintf(stderr, "Unsupported codec\n");
+		exit(1);
+	}
+
+	// copy context
+	AVCodecContext* codecContext = avcodec_alloc_context3(codec);
+	if (avcodec_copy_context(codecContext, codecContextOrigin) != 0) {
+		fprintf(stderr, "Couldn't copy codec context");
+		return -1;
+	}
+
+	// open codec
+	if (avcodec_open2(codecContext, codec, nullptr) < 0) {
+		fprintf(stderr, "Couldn't open codec");
+		return -1;
+	}
+
+	// allocate video frame
+	AVFrame* frame = av_frame_alloc();
+	AVFrame* frameYUV = av_frame_alloc();
+
+	// determine required buffer size and allocate buffer
+	int nbytes = avpicture_get_size(AV_PIX_FMT_YUV420P, codecContext->width, codecContext->height);
+	uint8_t* buffer = (uint8_t*)av_malloc(nbytes * sizeof(uint8_t));
+
+	// assign appropriate parts of buffer to image planes in frameYUV
+	// Note that frameYUV is an AVFrame, but AVFrame is a superset of AVPicture
+	avpicture_fill((AVPicture*)frameYUV, buffer, AV_PIX_FMT_YUV420P, codecContext->width, codecContext->height);
+
+	// initialize SWS context for software scaling
+	SwsContext* swsContext = sws_getContext(codecContext->width,
+											codecContext->height,
+											codecContext->pix_fmt,
+											codecContext->width,
+											codecContext->height,
+											AV_PIX_FMT_YUV420P,
+											SWS_BICUBIC,
+											nullptr,
+											nullptr,
+											nullptr);
+
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
+		fprintf(stderr, "Could not initialize SDL - %s\n", SDL_GetError());
+		exit(1);
+	}
+
+	SDL_Window* screen = SDL_CreateWindow("outputing to screen",
+										  SDL_WINDOWPOS_UNDEFINED,
+										  SDL_WINDOWPOS_UNDEFINED,
+										  codecContext->width,
+										  codecContext->height,
+										  SDL_WINDOW_OPENGL);
+	if (!screen) {
+		fprintf(stderr, "SDL: could not create window - exiting:%s\n", SDL_GetError());
+		exit(1);
+	}
+
+	SDL_Renderer* renderer = SDL_CreateRenderer(screen, -1, 0);
+	SDL_Texture* texture = SDL_CreateTexture(renderer, 
+											 SDL_PIXELFORMAT_IYUV, 
+											 SDL_TEXTUREACCESS_STREAMING,
+											 codecContext->width,
+											 codecContext->height);
+
+	SDL_Rect rect;
+	rect.x = rect.y = 0;
+	rect.w = codecContext->width;
+	rect.h = codecContext->height;
+
+
+	// read frames and save first five frames to disk
+	AVPacket packet;
+	while (av_read_frame(fmtContext, &packet) >= 0) {
+		if (packet.stream_index == videoStream) {
+			// decode video frame
+			int gotPicture = 0;
+			avcodec_decode_video2(codecContext, frame, &gotPicture, &packet);
+			if (gotPicture) {
+				// convert the image from its native format to RGB
+				sws_scale(swsContext,
+						  frame->data, frame->linesize,
+						  0, codecContext->height,
+						  frameYUV->data, frameYUV->linesize);
+				
+				SDL_UpdateYUVTexture(texture, &rect,
+									 frameYUV->data[0], frameYUV->linesize[0],
+									 frameYUV->data[1], frameYUV->linesize[1],
+									 frameYUV->data[2], frameYUV->linesize[2]);
+				SDL_RenderClear(renderer);
+				SDL_RenderCopy(renderer, texture, nullptr, &rect);
+				SDL_RenderPresent(renderer);
+				SDL_Delay(33);
+			}
+		}
+		av_free_packet(&packet);
+	}
+
+	SDL_Quit();
+
+	av_free(buffer);
+	av_frame_free(&frameYUV);
+	av_frame_free(&frame);
+	avcodec_close(codecContext);
+	avcodec_close(codecContextOrigin);
+	avformat_close_input(&fmtContext);
+}

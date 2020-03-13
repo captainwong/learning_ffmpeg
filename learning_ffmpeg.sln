@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ffmpeg.h = ffmpeg.h
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002.outputing_to_screen", "002.outputing_to_screen\002.outputing_to_screen.vcxproj", "{E57F644A-910C-47E1-8753-F24A6934028C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -26,6 +28,14 @@ Global
 		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Release|x64.Build.0 = Release|x64
 		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Release|x86.ActiveCfg = Release|Win32
 		{15E5A5C4-9680-428D-ACB1-339F3B46DA8D}.Release|x86.Build.0 = Release|Win32
+		{E57F644A-910C-47E1-8753-F24A6934028C}.Debug|x64.ActiveCfg = Debug|x64
+		{E57F644A-910C-47E1-8753-F24A6934028C}.Debug|x64.Build.0 = Debug|x64
+		{E57F644A-910C-47E1-8753-F24A6934028C}.Debug|x86.ActiveCfg = Debug|Win32
+		{E57F644A-910C-47E1-8753-F24A6934028C}.Debug|x86.Build.0 = Debug|Win32
+		{E57F644A-910C-47E1-8753-F24A6934028C}.Release|x64.ActiveCfg = Release|x64
+		{E57F644A-910C-47E1-8753-F24A6934028C}.Release|x64.Build.0 = Release|x64
+		{E57F644A-910C-47E1-8753-F24A6934028C}.Release|x86.ActiveCfg = Release|Win32
+		{E57F644A-910C-47E1-8753-F24A6934028C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
