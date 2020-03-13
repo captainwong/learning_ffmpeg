@@ -5,7 +5,7 @@
 #endif
 
 // supress deprecated errors
-#pragma warning(disable:4996)
+// #pragma warning(disable:4996)
 
 // Add ffmpeg path to your project's C++ path
 // e.g. E:\dev_ffmpeg\ffmpeg-20200311-36aaee2-win32-dev\
@@ -21,8 +21,16 @@ extern "C" {
 
 #pragma comment(lib, FFMPEG_LIB_PATH "avcodec.lib")
 #pragma comment(lib, FFMPEG_LIB_PATH "avformat.lib")
-#pragma comment(lib, FFMPEG_LIB_PATH "avutil.lib")
 #pragma comment(lib, FFMPEG_LIB_PATH "swscale.lib")
+#pragma comment(lib, FFMPEG_LIB_PATH "avutil.lib")
+
+// av_err2str cannot compile
+inline void fprintfAVErrorString(int err, const char* prefix = "error") {
+	char str[AV_ERROR_MAX_STRING_SIZE] = { 0 };
+	av_make_error_string(str, AV_ERROR_MAX_STRING_SIZE, err);
+	fprintf(stderr, prefix);
+	fprintf(stderr, ": %s\n", str);
+}
 
 
 /**
