@@ -89,26 +89,7 @@ int main()
 	SDL_Event ev;
 	while (av_read_frame(fmtContext, &packet) >= 0) {
 		if (packet.stream_index == videoStream) {
-			//// decode video frame
-			//int gotPicture = 0;
-			//avcodec_decode_video2(codecContext, frame, &gotPicture, &packet);
-			//if (gotPicture) {
-			//	// convert the image from its native format to YUV
-			//	sws_scale(swsContext,
-			//			  frame->data, frame->linesize,
-			//			  0, codecContext->height,
-			//			  frameYUV->data, frameYUV->linesize);
-			//	
-			//	SDL_UpdateYUVTexture(texture, &rect,
-			//						 frameYUV->data[0], frameYUV->linesize[0],
-			//						 frameYUV->data[1], frameYUV->linesize[1],
-			//						 frameYUV->data[2], frameYUV->linesize[2]);
-			//	SDL_RenderClear(renderer);
-			//	SDL_RenderCopy(renderer, texture, nullptr, &rect);
-			//	SDL_RenderPresent(renderer);
-			//	SDL_Delay(33);
-			//}
-
+			// decode video frame
 			int ret = avcodec_send_packet(codecContext, &packet);
 			if (ret < 0) {
 				fprintfAVErrorString(ret, "Error while sending a packet to the decoder");
