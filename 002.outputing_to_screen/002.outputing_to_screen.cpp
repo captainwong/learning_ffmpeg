@@ -12,8 +12,9 @@
 int main()
 {
 	// test_yuv420p_320x180.yuv
-	const char* file_path = R"(C:\Users\Jack\Videos\2020-01-16_20-13-52.mkv)";
+	//const char* file_path = R"(C:\Users\Jack\Videos\2020-01-16_20-13-52.mkv)";
 	//const char* file_path = R"(test_yuv420p_320x180.yuv)";
+	const char* file_path = R"(Z:\BodyCombat20171007200236.mp4)";
 
 	av_register_all();
 
@@ -118,16 +119,15 @@ int main()
 	rect.w = codecContext->width;
 	rect.h = codecContext->height;
 
-
-	// read frames and save first five frames to disk
 	AVPacket packet;
+	SDL_Event ev;
 	while (av_read_frame(fmtContext, &packet) >= 0) {
 		if (packet.stream_index == videoStream) {
 			// decode video frame
 			int gotPicture = 0;
 			avcodec_decode_video2(codecContext, frame, &gotPicture, &packet);
 			if (gotPicture) {
-				// convert the image from its native format to RGB
+				// convert the image from its native format to YUV
 				sws_scale(swsContext,
 						  frame->data, frame->linesize,
 						  0, codecContext->height,
@@ -144,6 +144,9 @@ int main()
 			}
 		}
 		av_free_packet(&packet);
+		if (SDL_PollEvent(&ev) && ev.type == SDL_QUIT) {
+			break;
+		}
 	}
 
 	SDL_Quit();
