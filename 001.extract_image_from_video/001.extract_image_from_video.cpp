@@ -78,21 +78,6 @@ int main()
 	while (av_read_frame(fmtContext, &packet) >= 0) {
 		if (packet.stream_index == videoStream) {
 			// decode video frame
-			//int gotPicture = 0;
-			//avcodec_decode_video2(codecContext, frame, &gotPicture, &packet);
-			//if (gotPicture) {
-			//	// convert the image from its native format to RGB
-			//	sws_scale(swsContext, 
-			//			  frame->data, frame->linesize, 
-			//			  0, codecContext->height,
-			//			  frameRGB->data, frameRGB->linesize);
-			//	static int count = 0;
-			//	if (++count <= 5) {
-			//		saveFrame(frameRGB, codecContext->width, codecContext->height, count);
-			//	} else {
-			//		break;
-			//	}
-			//}
 			int ret = avcodec_send_packet(codecContext, &packet);
 			if (ret < 0) {
 				fprintfAVErrorString(ret, "Error while sending a packet to the decoder");
