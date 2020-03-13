@@ -8,7 +8,7 @@ int main()
 	//const char* file_path = R"(test_yuv420p_320x180.yuv)";
 	const char* file_path = R"(Z:\BodyCombat20171007200236.mp4)";
 
-	av_register_all();
+	//av_register_all();
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
 		fprintf(stderr, "Could not initialize SDL - %s\n", SDL_GetError());
@@ -42,12 +42,12 @@ int main()
 	AVFrame* frameYUV = av_frame_alloc();
 
 	// determine required buffer size and allocate buffer
-	int nbytes = avpicture_get_size(AV_PIX_FMT_YUV420P, codecContext->width, codecContext->height);
+	int nbytes = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, codecContext->width, codecContext->height, 1);
 	uint8_t* buffer = (uint8_t*)av_malloc(nbytes * sizeof(uint8_t));
 
 	// assign appropriate parts of buffer to image planes in frameYUV
 	// Note that frameYUV is an AVFrame, but AVFrame is a superset of AVPicture
-	avpicture_fill((AVPicture*)frameYUV, buffer, AV_PIX_FMT_YUV420P, codecContext->width, codecContext->height);
+	av_image_fill_arrays(frameYUV->data, frameYUV->linesize, buffer, AV_PIX_FMT_YUV420P, codecContext->width, codecContext->height, 1);
 
 	// initialize SWS context for software scaling
 	SwsContext* swsContext = sws_getContext(codecContext->width,
@@ -108,7 +108,7 @@ int main()
 				SDL_Delay(33);
 			}
 		}
-		av_free_packet(&packet);
+		av_packet_unref(&packet); // or av_free_packet
 		if (SDL_PollEvent(&ev) && ev.type == SDL_QUIT) {
 			break;
 		}

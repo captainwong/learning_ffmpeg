@@ -13,7 +13,7 @@
 extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
-#include "libavutil/avutil.h"
+#include "libavutil/imgutils.h"
 #include "libswscale/swscale.h"
 }
 
@@ -32,7 +32,7 @@ extern "C" {
 * @param[in|out] stream_idx If ok, identifies the stream index of type
 * @return AVCodecContext* Return nullptr if failed, otherwise OK
 * @note It's caller's duty to free the returned context if not null
-* @note Equavolant snippet is listed below.
+* @note Equivalent snippet is listed below.
 */
 inline AVCodecContext* openCodecContext(AVFormatContext* fmtCtx, AVMediaType type, int& streamIdx)
 {
@@ -77,7 +77,7 @@ inline AVCodecContext* openCodecContext(AVFormatContext* fmtCtx, AVMediaType typ
 }
 
 /*
-equavolant old style
+Equivalent old style
 
 // find the first video stream
 int videoStream = -1;
