@@ -18,8 +18,9 @@ struct PacketQ {
 		cond = SDL_CreateCond();
 	}
 
-	int put(AVPacket* pkt) {
-		if (av_dup_packet(pkt) < 0) {
+	int put(AVPacket* pktSrc) {
+		AVPacket* pkt = nullptr;
+		if (av_packet_ref(pkt, pktSrc) < 0) {
 			fprintf(stderr, "Cound not duplicate AVPacket\n");
 			return -1;
 		}
@@ -197,43 +198,51 @@ int main()
 	rect.w = codecContext->width;
 	rect.h = codecContext->height;
 
+	auto decodePacket = [codecContext, swsContext, frame, frameYUV, renderer, texture, &rect](AVPacket* packet) {
+		// decode video frame
+		int ret = avcodec_send_packet(codecContext, packet);
+		if (ret < 0) {
+			fprintfAVErrorString(ret, "Error while sending a packet to the decoder");
+			return ret;
+		}
+
+		while (ret >= 0) {
+			ret = avcodec_receive_frame(codecContext, frame);
+			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+				break;
+			} else if (ret < 0) {
+				fprintfAVErrorString(ret, "Error while receiving a frame from the decoder");
+				break;
+			}
+
+			if (ret >= 0) {
+				// convert the image from its native format to YUV
+				sws_scale(swsContext,
+						  frame->data, frame->linesize,
+						  0, codecContext->height,
+						  frameYUV->data, frameYUV->linesize);
+
+				SDL_UpdateYUVTexture(texture, &rect,
+									 frameYUV->data[0], frameYUV->linesize[0],
+									 frameYUV->data[1], frameYUV->linesize[1],
+									 frameYUV->data[2], frameYUV->linesize[2]);
+				SDL_RenderClear(renderer);
+				SDL_RenderCopy(renderer, texture, nullptr, &rect);
+				SDL_RenderPresent(renderer);
+				SDL_Delay(33);
+				//av_frame_unref(frame);
+			}
+		}
+
+		return 0;
+	};
+
 	AVPacket packet;
 	SDL_Event ev;
 	while (av_read_frame(fmtContext, &packet) >= 0) {
 		if (packet.stream_index == videoStream) {
-			// decode video frame
-			int ret = avcodec_send_packet(codecContext, &packet);
-			if (ret < 0) {
-				fprintfAVErrorString(ret, "Error while sending a packet to the decoder");
+			if (decodePacket(&packet) < 0) {
 				break;
-			}
-
-			while (ret >= 0) {
-				ret = avcodec_receive_frame(codecContext, frame);
-				if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
-					break;
-				} else if (ret < 0) {
-					fprintfAVErrorString(ret, "Error while receiving a frame from the decoder");
-					break;
-				}
-
-				if (ret >= 0) {
-					// convert the image from its native format to YUV
-					sws_scale(swsContext,
-							  frame->data, frame->linesize,
-							  0, codecContext->height,
-							  frameYUV->data, frameYUV->linesize);
-
-					SDL_UpdateYUVTexture(texture, &rect,
-										 frameYUV->data[0], frameYUV->linesize[0],
-										 frameYUV->data[1], frameYUV->linesize[1],
-										 frameYUV->data[2], frameYUV->linesize[2]);
-					SDL_RenderClear(renderer);
-					SDL_RenderCopy(renderer, texture, nullptr, &rect);
-					SDL_RenderPresent(renderer);
-					SDL_Delay(33);
-					//av_frame_unref(frame);
-				}
 			}
 		}
 		av_packet_unref(&packet); // or av_free_packet
@@ -241,6 +250,9 @@ int main()
 			break;
 		}
 	}
+
+	// flush cached frames
+	decodePacket(nullptr);
 
 	SDL_Quit();
 

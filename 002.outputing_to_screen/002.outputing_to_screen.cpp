@@ -85,7 +85,7 @@ int main()
 	rect.w = codecContext->width;
 	rect.h = codecContext->height;
 
-	auto decodePacket = [&](AVPacket* packet) {
+	auto decodePacket = [codecContext, swsContext, frame, frameYUV, renderer, texture, &rect](AVPacket* packet) {
 		// decode video frame
 		int ret = avcodec_send_packet(codecContext, packet);
 		if (ret < 0) {
