@@ -1,5 +1,6 @@
 #include "../ffmpeg.h"
 #include "../sdl.h"
+#include <assert.h>
 
 static constexpr int SDL_AUDIO_BUFFER_SIZE = 1024;
 static constexpr int MAX_AUDIO_FRAME_SIZE = 19200;
@@ -19,11 +20,13 @@ struct PacketQ {
 	}
 
 	int put(AVPacket* pktSrc) {
-		AVPacket* pkt = nullptr;
-		if (av_packet_ref(pkt, pktSrc) < 0) {
+		AVPacket pktCopy;
+		if (av_packet_ref(&pktCopy, pktSrc) < 0) {
 			fprintf(stderr, "Cound not duplicate AVPacket\n");
 			return -1;
 		}
+
+		AVPacket* pkt = &pktCopy;
 
 		AVPacketList* pktList = (AVPacketList*)av_malloc(sizeof(AVPacketList));
 		pktList->pkt = *pkt;
@@ -80,11 +83,57 @@ struct PacketQ {
 
 int audioDecodeFrame(AVCodecContext* aCodecContext, uint8_t* audioBuff, int buffSize)
 {
+	static AVPacket pkt;
+	static AVFrame frame;
+	static uint8_t* audioPktData = nullptr;
 	static int audioPktSize = 0;
+
+	int len1 = 0, dataSize = 0;
 	while (1) {
 		while (audioPktSize > 0) {
+			int gotFrame = 0;
+			len1 = avcodec_decode_audio4(aCodecContext, &frame, &gotFrame, &pkt);
+			if (len1 < 0) {
+				// error, skip frame
+				audioPktSize = 0;
+				break;
+			}
 
+			audioPktData += len1;
+			audioPktSize -= len1;
+			dataSize = 0;
+			if (gotFrame) {
+				dataSize = av_samples_get_buffer_size(nullptr,
+													  frame.channels,
+													  frame.nb_samples,
+													  aCodecContext->sample_fmt,
+													  1);
+				assert(dataSize <= buffSize);
+				memcpy(audioBuff, frame.data[0], dataSize);
+			}
+
+			if (dataSize <= 0) {
+				// no data yet, get more frames
+				continue;
+			}
+
+			return dataSize;
 		}
+
+		if (pkt.data) {
+			av_packet_unref(&pkt);
+		}
+
+		if (audioQ.quit) {
+			return -1;
+		}
+
+		if (audioQ.get(&pkt, 1) < 0) {
+			return -1;
+		}
+
+		audioPktData = pkt.data;
+		audioPktSize = pkt.size;
 	}
 }
 
@@ -99,7 +148,24 @@ void audio_callback(void* userdata, Uint8* stream, int len)
 		if (audioBuffIdx >= audioBuffSize) {
 			// We've already sent all our data; get more
 			int audioSize = audioDecodeFrame(aCodecContext, audioBuff, sizeof(audioBuff));
+			if (audioSize < 0) {
+				// if error, output silence
+				audioBuffSize = 1024;
+				memset(audioBuff, 0, audioBuffSize);
+			} else {
+				audioBuffSize = audioSize;
+			}
+			audioBuffIdx = 0;
 		}
+
+		int len1 = audioBuffSize - audioBuffIdx;
+		if (len1 > len) {
+			len1 = len;
+		}
+		memcpy(stream, (const uint8_t*)audioBuff + audioBuffIdx, len1);
+		len -= len1;
+		stream += len1;
+		audioBuffIdx += len1;
 	}
 }
 
@@ -150,6 +216,14 @@ int main()
 	wantedSpec.samples = SDL_AUDIO_BUFFER_SIZE;
 	wantedSpec.callback = audio_callback;
 	wantedSpec.userdata = aCodecContext;
+
+	if (SDL_OpenAudio(&wantedSpec, &spec) < 0) {
+		fprintf(stderr, "SDL_OpenAudio failed: %s\n", SDL_GetError());
+		exit(1);
+	}
+
+	audioQ.init();
+	SDL_PauseAudio(0);
 
 	// allocate video frame
 	AVFrame* frame = av_frame_alloc();
@@ -244,9 +318,15 @@ int main()
 			if (decodePacket(&packet) < 0) {
 				break;
 			}
+			av_packet_unref(&packet); // or av_free_packet
+		} else if (packet.stream_index == audioStream) {
+			audioQ.put(&packet);
+		} else {
+			av_packet_unref(&packet); // or av_free_packet
 		}
-		av_packet_unref(&packet); // or av_free_packet
 		if (SDL_PollEvent(&ev) && ev.type == SDL_QUIT) {
+			audioQ.quit = 1;
+			SDL_CondSignal(audioQ.cond);
 			break;
 		}
 	}
@@ -260,5 +340,6 @@ int main()
 	av_frame_free(&frameYUV);
 	av_frame_free(&frame);
 	avcodec_free_context(&codecContext);
+	avcodec_free_context(&aCodecContext);
 	avformat_close_input(&fmtContext);
 }

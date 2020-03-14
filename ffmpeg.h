@@ -5,7 +5,7 @@
 #endif
 
 // supress deprecated errors
-// #pragma warning(disable:4996)
+#pragma warning(disable:4996)
 
 // Add ffmpeg path to your project's C++ path
 // e.g. E:\dev_ffmpeg\ffmpeg-20200311-36aaee2-win32-dev\
@@ -13,14 +13,21 @@
 extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
-#include "libavutil/imgutils.h"
+#include "libswresample/swresample.h"
 #include "libswscale/swscale.h"
+#include "libavutil/imgutils.h"
 }
 
 #define FFMPEG_LIB_PATH R"(E:\dev_ffmpeg\ffmpeg-20200311-36aaee2-win32-dev\lib\)"
 
+// According to http://ffmpeg.org/faq.html
+// You must specify the libraries in dependency order:
+// -lavdevice must come before -lavformat
+// -lavutil must come after everything else
+
 #pragma comment(lib, FFMPEG_LIB_PATH "avcodec.lib")
 #pragma comment(lib, FFMPEG_LIB_PATH "avformat.lib")
+#pragma comment(lib, FFMPEG_LIB_PATH "swresample.lib")
 #pragma comment(lib, FFMPEG_LIB_PATH "swscale.lib")
 #pragma comment(lib, FFMPEG_LIB_PATH "avutil.lib")
 
@@ -68,7 +75,55 @@ inline AVCodecContext* openCodecContext(AVFormatContext* fmtCtx, AVMediaType typ
 		}
 
 		// open codec
-		if (avcodec_open2(codecContext, codec, nullptr) < 0) {
+		if (avcodec_open2(codecContext, codec, nullptr)) {
+			fprintf(stderr, "Failed to open %s codec\n", av_get_media_type_string(type));
+			break;
+		}
+
+		return codecContext;
+
+	} while (0);
+
+	if (codecContext) {
+		avcodec_free_context(&codecContext);
+	}
+
+	return nullptr;
+}
+
+inline AVCodecContext* openCodecContext2(AVFormatContext* fmtCtx, AVMediaType type, int& streamIdx)
+{
+	AVCodecContext* codecContext = nullptr;
+
+	do {
+		// find the best stream
+		streamIdx = av_find_best_stream(fmtCtx, type, -1, -1, nullptr, 0);
+		if (streamIdx < 0) {
+			fprintf(stderr, "Counld not find %s stream\n", av_get_media_type_string(type));
+			break;
+		}
+
+		// allocate context
+		if (!(codecContext = avcodec_alloc_context3(nullptr))) {
+			fprintf(stderr, "Failed to allocate %s codec\n", av_get_media_type_string(type));
+			break;
+		}
+
+		// copy context
+		if (avcodec_parameters_to_context(codecContext, fmtCtx->streams[streamIdx]->codecpar)) {
+			fprintf(stderr, "Failed to copy %s codec parameters to codec context\n", av_get_media_type_string(type));
+			break;
+		}
+
+		// find codec
+		AVCodec* codec = avcodec_find_decoder(codecContext->codec_id);
+		if (!codec) {
+			fprintf(stderr, "Failed to find %s codec\n", av_get_media_type_string(type));
+			break;
+		}
+
+		// open codec
+		if (avcodec_open2(codecContext, codec, nullptr)) {
 			fprintf(stderr, "Failed to open %s codec\n", av_get_media_type_string(type));
 			break;
 		}
