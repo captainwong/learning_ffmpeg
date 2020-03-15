@@ -28,7 +28,9 @@ int main()
 {
 	//const char* file_path = R"(Z:\BodyCombat20171007200236.mp4)";
 	//const char* file_path = R"(Z:\winter10.mkv)";
-	const char* file_path = "F:/CloudMusic/MV/a.mp4";
+	//const char* file_path = "F:/CloudMusic/MV/a.mp4";
+	//const char* file_path = "Z:/ONeal.mkv";
+	const char* file_path = "Z:/8guangboticao.mp4";
 
 	//av_register_all();
 
