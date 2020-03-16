@@ -22,13 +22,42 @@
 #ifndef FFTOOLS_CMDUTILS_H
 #define FFTOOLS_CMDUTILS_H
 
+#pragma once
+
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#pragma warning(disable:4996)
+
+#define FFMPEG_LIB_PATH R"(E:\dev_ffmpeg\ffmpeg-20200311-36aaee2-win32-dev\lib\)"
+
+ // According to http://ffmpeg.org/faq.html
+ // You must specify the libraries in dependency order:
+ // -lavdevice must come before -lavformat
+ // -lavutil must come after everything else
+
+#pragma comment(lib, FFMPEG_LIB_PATH "avcodec.lib")
+#pragma comment(lib, FFMPEG_LIB_PATH "avdevice.lib")
+#pragma comment(lib, FFMPEG_LIB_PATH "avfilter.lib")
+#pragma comment(lib, FFMPEG_LIB_PATH "avformat.lib")
+#pragma comment(lib, FFMPEG_LIB_PATH "swresample.lib")
+#pragma comment(lib, FFMPEG_LIB_PATH "swscale.lib")
+#pragma comment(lib, FFMPEG_LIB_PATH "avutil.lib")
+
+
+
 #include <stdint.h>
 
 #include "config.h"
+
+extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavfilter/avfilter.h"
 #include "libavformat/avformat.h"
 #include "libswscale/swscale.h"
+};
+
 
 #ifdef _WIN32
 #undef main /* We don't want SDL to override our main() */
@@ -202,43 +231,41 @@ void show_help_options(const OptionDef* options, const char* msg, int req_flags,
                        int rej_flags, int alt_flags);
 
 #if CONFIG_AVDEVICE
-#define CMDUTILS_COMMON_OPTIONS_AVDEVICE                                                                                \
-    { "sources"    , OPT_EXIT | HAS_ARG, { .func_arg = show_sources },                                                  \
-      "list sources of the input device", "device" },                                                                   \
-    { "sinks"      , OPT_EXIT | HAS_ARG, { .func_arg = show_sinks },                                                    \
-      "list sinks of the output device", "device" },                                                                    \
+#define CMDUTILS_COMMON_OPTIONS_AVDEVICE                                                                    \
+    { "sources"    , OPT_EXIT | HAS_ARG, { show_sources }, "list sources of the input device", "device" },  \
+    { "sinks"      , OPT_EXIT | HAS_ARG, { show_sinks }, "list sinks of the output device", "device" },     \
 
 #else
 #define CMDUTILS_COMMON_OPTIONS_AVDEVICE
 #endif
 
-#define CMDUTILS_COMMON_OPTIONS                                                                                         \
-    { "L",           OPT_EXIT,             { .func_arg = show_license },     "show license" },                          \
-    { "h",           OPT_EXIT,             { .func_arg = show_help },        "show help", "topic" },                    \
-    { "?",           OPT_EXIT,             { .func_arg = show_help },        "show help", "topic" },                    \
-    { "help",        OPT_EXIT,             { .func_arg = show_help },        "show help", "topic" },                    \
-    { "-help",       OPT_EXIT,             { .func_arg = show_help },        "show help", "topic" },                    \
-    { "version",     OPT_EXIT,             { .func_arg = show_version },     "show version" },                          \
-    { "buildconf",   OPT_EXIT,             { .func_arg = show_buildconf },   "show build configuration" },              \
-    { "formats",     OPT_EXIT,             { .func_arg = show_formats },     "show available formats" },                \
-    { "muxers",      OPT_EXIT,             { .func_arg = show_muxers },      "show available muxers" },                 \
-    { "demuxers",    OPT_EXIT,             { .func_arg = show_demuxers },    "show available demuxers" },               \
-    { "devices",     OPT_EXIT,             { .func_arg = show_devices },     "show available devices" },                \
-    { "codecs",      OPT_EXIT,             { .func_arg = show_codecs },      "show available codecs" },                 \
-    { "decoders",    OPT_EXIT,             { .func_arg = show_decoders },    "show available decoders" },               \
-    { "encoders",    OPT_EXIT,             { .func_arg = show_encoders },    "show available encoders" },               \
-    { "bsfs",        OPT_EXIT,             { .func_arg = show_bsfs },        "show available bit stream filters" },     \
-    { "protocols",   OPT_EXIT,             { .func_arg = show_protocols },   "show available protocols" },              \
-    { "filters",     OPT_EXIT,             { .func_arg = show_filters },     "show available filters" },                \
-    { "pix_fmts",    OPT_EXIT,             { .func_arg = show_pix_fmts },    "show available pixel formats" },          \
-    { "layouts",     OPT_EXIT,             { .func_arg = show_layouts },     "show standard channel layouts" },         \
-    { "sample_fmts", OPT_EXIT,             { .func_arg = show_sample_fmts }, "show available audio sample formats" },   \
-    { "colors",      OPT_EXIT,             { .func_arg = show_colors },      "show available color names" },            \
-    { "loglevel",    HAS_ARG,              { .func_arg = opt_loglevel },     "set logging level", "loglevel" },         \
-    { "v",           HAS_ARG,              { .func_arg = opt_loglevel },     "set logging level", "loglevel" },         \
-    { "report",      0,                    { .func_arg = opt_report },       "generate a report" },                     \
-    { "max_alloc",   HAS_ARG,              { .func_arg = opt_max_alloc },    "set maximum size of a single allocated block", "bytes" }, \
-    { "cpuflags",    HAS_ARG | OPT_EXPERT, { .func_arg = opt_cpuflags },     "force specific cpu flags", "flags" },     \
+#define CMDUTILS_COMMON_OPTIONS                                                                             \
+    { "L",           OPT_EXIT,             { show_license },     "show license" },                          \
+    { "h",           OPT_EXIT,             { show_help },        "show help", "topic" },                    \
+    { "?",           OPT_EXIT,             { show_help },        "show help", "topic" },                    \
+    { "help",        OPT_EXIT,             { show_help },        "show help", "topic" },                    \
+    { "-help",       OPT_EXIT,             { show_help },        "show help", "topic" },                    \
+    { "version",     OPT_EXIT,             { show_version },     "show version" },                          \
+    { "buildconf",   OPT_EXIT,             { show_buildconf },   "show build configuration" },              \
+    { "formats",     OPT_EXIT,             { show_formats },     "show available formats" },                \
+    { "muxers",      OPT_EXIT,             { show_muxers },      "show available muxers" },                 \
+    { "demuxers",    OPT_EXIT,             { show_demuxers },    "show available demuxers" },               \
+    { "devices",     OPT_EXIT,             { show_devices },     "show available devices" },                \
+    { "codecs",      OPT_EXIT,             { show_codecs },      "show available codecs" },                 \
+    { "decoders",    OPT_EXIT,             { show_decoders },    "show available decoders" },               \
+    { "encoders",    OPT_EXIT,             { show_encoders },    "show available encoders" },               \
+    { "bsfs",        OPT_EXIT,             { show_bsfs },        "show available bit stream filters" },     \
+    { "protocols",   OPT_EXIT,             { show_protocols },   "show available protocols" },              \
+    { "filters",     OPT_EXIT,             { show_filters },     "show available filters" },                \
+    { "pix_fmts",    OPT_EXIT,             { show_pix_fmts },    "show available pixel formats" },          \
+    { "layouts",     OPT_EXIT,             { show_layouts },     "show standard channel layouts" },         \
+    { "sample_fmts", OPT_EXIT,             { show_sample_fmts }, "show available audio sample formats" },   \
+    { "colors",      OPT_EXIT,             { show_colors },      "show available color names" },            \
+    { "loglevel",    HAS_ARG,              { opt_loglevel },     "set logging level", "loglevel" },         \
+    { "v",           HAS_ARG,              { opt_loglevel },     "set logging level", "loglevel" },         \
+    { "report",      0,                    { opt_report },       "generate a report" },                     \
+    { "max_alloc",   HAS_ARG,              { opt_max_alloc },    "set maximum size of a single allocated block", "bytes" }, \
+    { "cpuflags",    HAS_ARG | OPT_EXPERT, { opt_cpuflags },     "force specific cpu flags", "flags" },     \
     { "hide_banner", OPT_BOOL | OPT_EXPERT, {&hide_banner},     "do not show program banner", "hide_banner" },          \
     CMDUTILS_COMMON_OPTIONS_AVDEVICE                                                                                    \
 

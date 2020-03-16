@@ -140,11 +140,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cmdutils.cpp" />
     <ClCompile Include="ffplay++.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cmdutils.h" />
+    <ClInclude Include="config.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
