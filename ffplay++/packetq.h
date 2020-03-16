@@ -29,7 +29,7 @@ typedef struct PacketQueue {
 
         pkt1->pkt = *pkt;
         pkt1->next = NULL;
-        if (pkt == &flush_pkt)
+        if (pkt == &ffplay.flush_pkt)
             serial++;
         pkt1->serial = serial;
 
@@ -54,7 +54,7 @@ typedef struct PacketQueue {
         ret = put_private(pkt);
         SDL_UnlockMutex(mutex);
 
-        if (pkt != &flush_pkt && ret < 0)
+        if (pkt != &ffplay.flush_pkt && ret < 0)
             av_packet_unref(pkt);
 
         return ret;
@@ -128,7 +128,7 @@ typedef struct PacketQueue {
     {
         SDL_LockMutex(mutex);
         abort_request = 0;
-        put_private(&flush_pkt);
+        put_private(&ffplay.flush_pkt);
         SDL_UnlockMutex(mutex);
     }
 
@@ -175,5 +175,4 @@ typedef struct PacketQueue {
 #define VIDEO_PICTURE_QUEUE_SIZE 3
 #define SUBPICTURE_QUEUE_SIZE 16
 #define SAMPLE_QUEUE_SIZE 9
-#define FRAME_QUEUE_SIZE FFMAX(SAMPLE_QUEUE_SIZE, FFMAX(VIDEO_PICTURE_QUEUE_SIZE, SUBPICTURE_QUEUE_SIZE))
 

@@ -21,6 +21,15 @@
     <ClCompile Include="cmdutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="videostate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="frameq.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cmdutils.h">
@@ -36,6 +45,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="packetq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="videostate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="frameq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="clock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdlstuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

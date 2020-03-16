@@ -26,17 +26,6 @@
 
 #include "ffmpeg.h"
 
-
- /**
-  * program name, defined by the program for show_version().
-  */
-extern const char program_name[];
-
-/**
- * program birth year, defined by the program for show_banner()
- */
-extern const int program_birth_year;
-
 extern AVCodecContext* avcodec_opts[AVMEDIA_TYPE_NB];
 extern AVFormatContext* avformat_opts;
 extern AVDictionary* sws_dict;

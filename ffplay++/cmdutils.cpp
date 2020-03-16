@@ -1,5 +1,5 @@
 #include "cmdutils.h"
-
+#include "ffplay++.h"
 
 static int init_report(const char* env);
 

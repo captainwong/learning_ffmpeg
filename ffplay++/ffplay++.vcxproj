@@ -141,14 +141,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cmdutils.cpp" />
+    <ClCompile Include="decoder.cpp" />
     <ClCompile Include="ffplay++.cpp" />
+    <ClCompile Include="frameq.cpp" />
+    <ClCompile Include="videostate.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="clock.h" />
     <ClInclude Include="cmdutils.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="decoder.h" />
     <ClInclude Include="ffmpeg.h" />
     <ClInclude Include="ffplay++.h" />
+    <ClInclude Include="frameq.h" />
     <ClInclude Include="packetq.h" />
+    <ClInclude Include="sdlstuff.h" />
+    <ClInclude Include="videostate.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
