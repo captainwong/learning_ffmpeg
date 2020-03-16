@@ -24,44 +24,8 @@
 
 #pragma once
 
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
+#include "ffmpeg.h"
 
-#pragma warning(disable:4996)
-
-#define FFMPEG_LIB_PATH R"(E:\dev_ffmpeg\ffmpeg-20200311-36aaee2-win32-dev\lib\)"
-
- // According to http://ffmpeg.org/faq.html
- // You must specify the libraries in dependency order:
- // -lavdevice must come before -lavformat
- // -lavutil must come after everything else
-
-#pragma comment(lib, FFMPEG_LIB_PATH "avcodec.lib")
-#pragma comment(lib, FFMPEG_LIB_PATH "avdevice.lib")
-#pragma comment(lib, FFMPEG_LIB_PATH "avfilter.lib")
-#pragma comment(lib, FFMPEG_LIB_PATH "avformat.lib")
-#pragma comment(lib, FFMPEG_LIB_PATH "swresample.lib")
-#pragma comment(lib, FFMPEG_LIB_PATH "swscale.lib")
-#pragma comment(lib, FFMPEG_LIB_PATH "avutil.lib")
-
-
-
-#include <stdint.h>
-
-#include "config.h"
-
-extern "C" {
-#include "libavcodec/avcodec.h"
-#include "libavfilter/avfilter.h"
-#include "libavformat/avformat.h"
-#include "libswscale/swscale.h"
-};
-
-
-#ifdef _WIN32
-#undef main /* We don't want SDL to override our main() */
-#endif
 
  /**
   * program name, defined by the program for show_version().

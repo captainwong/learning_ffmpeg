@@ -1,78 +1,5 @@
-/*
- * Various utilities for command line tools
- * Copyright (c) 2000-2003 Fabrice Bellard
- *
- * This file is part of FFmpeg.
- *
- * FFmpeg is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * FFmpeg is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with FFmpeg; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
-
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#pragma warning(disable:4996)
-
-#include <string.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <math.h>
-
- /* Include only the enabled headers since some compilers (namely, Sun
-    Studio) will not omit unused inline functions and create undefined
-    references to libraries that are not being built. */
-
-#include "config.h"
-extern "C" {
-#include "compat/va_copy.h"
-#include "libavformat/avformat.h"
-#include "libavfilter/avfilter.h"
-#include "libavdevice/avdevice.h"
-#include "libavresample/avresample.h"
-#include "libswscale/swscale.h"
-#include "libswresample/swresample.h"
-#include "libpostproc/postprocess.h"
-#include "libavutil/attributes.h"
-#include "libavutil/avassert.h"
-#include "libavutil/avstring.h"
-#include "libavutil/bprint.h"
-#include "libavutil/display.h"
-#include "libavutil/mathematics.h"
-#include "libavutil/imgutils.h"
-#include "libavutil/libm.h"
-#include "libavutil/parseutils.h"
-#include "libavutil/pixdesc.h"
-#include "libavutil/eval.h"
-#include "libavutil/dict.h"
-#include "libavutil/opt.h"
-#include "libavutil/cpu.h"
-#include "libavutil/ffversion.h"
-#include "libavutil/version.h"
 #include "cmdutils.h"
-#if CONFIG_NETWORK
-#include "libavformat/network.h"
-#endif
-}
-//#if HAVE_SYS_RESOURCE_H
-//#include <sys/time.h>
-//#include <sys/resource.h>
-//#endif
-#ifdef _WIN32
-#include <windows.h>
-#endif
+
 
 static int init_report(const char* env);
 
@@ -310,7 +237,7 @@ static int write_option(void* optctx, const OptionDef* po, const char* opt,
     int* dstcount;
 
     if (po->flags & OPT_SPEC) {
-        SpecifierOpt** so = (SpecifierOpt * *)dst;
+        SpecifierOpt** so = (SpecifierOpt**)dst;
         const char* p = strchr(opt, ':');
         char* str;
 
@@ -1037,7 +964,7 @@ static int init_report(const char* env)
 
     av_bprint_init(&filename, 0, AV_BPRINT_SIZE_AUTOMATIC);
     expand_filename_template(&filename,
-                             (const char*)av_x_if_null(filename_template, "%p-%t.log"), tm);
+        (const char*)av_x_if_null(filename_template, "%p-%t.log"), tm);
     av_free(filename_template);
     if (!av_bprint_is_complete(&filename)) {
         av_log(NULL, AV_LOG_ERROR, "Out of memory building report file name\n");
@@ -1089,14 +1016,14 @@ int opt_max_alloc(void* optctx, const char* opt, const char* arg)
 
 int opt_timelimit(void* optctx, const char* opt, const char* arg)
 {
-//#if HAVE_SETRLIMIT
-//    int lim = parse_number_or_die(opt, arg, OPT_INT64, 0, INT_MAX);
-//    struct rlimit rl = { lim, lim + 1 };
-//    if (setrlimit(RLIMIT_CPU, &rl))
-//        perror("setrlimit");
-//#else
+    //#if HAVE_SETRLIMIT
+    //    int lim = parse_number_or_die(opt, arg, OPT_INT64, 0, INT_MAX);
+    //    struct rlimit rl = { lim, lim + 1 };
+    //    if (setrlimit(RLIMIT_CPU, &rl))
+    //        perror("setrlimit");
+    //#else
     av_log(NULL, AV_LOG_WARNING, "-%s not implemented on this OS\n", opt);
-//#endif
+    //#endif
     return 0;
 }
 
@@ -1528,8 +1455,8 @@ static const AVCodec* next_codec_for_id(enum AVCodecID id, const AVCodec* prev,
 
 static int compare_codec_desc(const void* a, const void* b)
 {
-    const AVCodecDescriptor* const* da = (const AVCodecDescriptor* const* )a;
-    const AVCodecDescriptor* const* db = (const AVCodecDescriptor* const* )b;
+    const AVCodecDescriptor* const* da = (const AVCodecDescriptor* const*)a;
+    const AVCodecDescriptor* const* db = (const AVCodecDescriptor* const*)b;
 
     return (*da)->type != (*db)->type ? FFDIFFSIGN((*da)->type, (*db)->type) :
         strcmp((*da)->name, (*db)->name);
