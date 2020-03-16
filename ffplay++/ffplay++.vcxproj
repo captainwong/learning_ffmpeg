@@ -147,6 +147,8 @@
     <ClInclude Include="cmdutils.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="ffmpeg.h" />
+    <ClInclude Include="ffplay++.h" />
+    <ClInclude Include="packetq.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

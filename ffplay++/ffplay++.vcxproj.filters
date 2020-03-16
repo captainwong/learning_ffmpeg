@@ -32,5 +32,11 @@
     <ClInclude Include="ffmpeg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ffplay++.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="packetq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
