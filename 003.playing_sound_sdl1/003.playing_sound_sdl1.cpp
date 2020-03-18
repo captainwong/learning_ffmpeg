@@ -19,29 +19,33 @@ struct PacketQueue {
 	}
 
 	int put(AVPacket* pkt) {
-		if (av_dup_packet(pkt) < 0) { return -1; }
-		AVPacket* t = (AVPacket*)av_malloc(sizeof(AVPacket));
-		*t = *pkt;
+		//if (av_packet_ref(pkt) < 0) { return -1; }
+		//AVPacket* t = (AVPacket*)av_malloc(sizeof(AVPacket));
+		// *t = *pkt;
+		//assert(0 == memcmp(t, pkt, sizeof(AVPacket)));
 
 		SDL_LockMutex(mutex);
-		q.push(t);
-		size += t->size;
+		q.push(pkt);
+		size += pkt->size;
 		SDL_CondSignal(cond);
 		SDL_UnlockMutex(mutex);
 		return 0;
 	}
 
-	int get(AVPacket* pkt, int block) {
+	int get(AVPacket*& pkt, int block) {
 		int ret = -1;
 		SDL_LockMutex(mutex);
 		while (1) {
 			if (quit) { ret = -1; break; }
 
 			if (!q.empty()) {
-				auto pkt1 = q.front(); q.pop();
+				/*auto pkt1 = q.front(); q.pop();
 				*pkt = *pkt1;
+				assert(0 == memcmp(pkt1, pkt, sizeof(AVPacket)));
 				size -= pkt1->size;
-				av_free(pkt1);
+				av_free(pkt1);*/
+				pkt = q.front(); q.pop();
+				size -= pkt->size;
 				ret = 1;
 				break;
 			} else if (!block) {
@@ -60,7 +64,7 @@ PacketQueue audioQ = {};
 
 int audioDecodeFrame(AVCodecContext* codecCtx, uint8_t* audioBuf, int bufSize)
 {
-	static AVPacket pkt;
+	static AVPacket *pkt = NULL;
 	static uint8_t* audioPktData = nullptr;
 	static int audioPktSize = 0;
 	static AVFrame frame;
@@ -68,7 +72,7 @@ int audioDecodeFrame(AVCodecContext* codecCtx, uint8_t* audioBuf, int bufSize)
 	while (1) {
 		while (audioPktSize > 0) {
 			int gotFrame = 0;
-			int len = avcodec_decode_audio4(codecCtx, &frame, &gotFrame, &pkt);
+			int len = avcodec_decode_audio4(codecCtx, &frame, &gotFrame, pkt);
 			if (len < 0) {
 				audioPktSize = 0;
 				break;
@@ -87,20 +91,20 @@ int audioDecodeFrame(AVCodecContext* codecCtx, uint8_t* audioBuf, int bufSize)
 			return dataSize;
 		}
 
-		if (pkt.data) {
-			av_free_packet(&pkt);
+		if (pkt) {
+			av_packet_unref(pkt);
 		}
 
 		if (audioQ.quit) {
 			return -1;
 		}
 
-		if (audioQ.get(&pkt, 1) < 0) {
+		if (audioQ.get(pkt, 1) < 0) {
 			return -1;
 		}
 
-		audioPktData = pkt.data;
-		audioPktSize = pkt.size;
+		audioPktData = pkt->data;
+		audioPktSize = pkt->size;
 	}
 }
 
@@ -136,9 +140,9 @@ int main()
 	//const char* file_path = R"(Z:\BodyCombat20171007200236.mp4)";
 	//const char* file_path = R"(Z:\winter10.mkv)";
 	//const char* file_path = "F:/CloudMusic/MV/a.mp4";
-	//const char* file_path = "Z:/ONeal.mkv";
+	const char* file_path = "Z:/ONeal.mkv";
 	//const char* file_path = "Z:/8guangboticao.mp4";
-	const char* file_path = R"(Z:\winter.mkv)";
+	//const char* file_path = R"(Z:\winter.mkv)";
 
 	av_register_all();
 
@@ -244,15 +248,17 @@ int main()
 				rect.w = codecContext->width;
 				rect.h = codecContext->height;
 				SDL_DisplayYUVOverlay(bmp, &rect);
-				av_free_packet(packet);
+				//av_packet_unref(packet);
 			}
+			av_packet_unref(packet);
 		} else if (packet->stream_index == audioStream) {
-			
+			audioQ.put(packet);
 		} else {
 			av_packet_unref(packet);
 		}
 
 		if (SDL_PollEvent(&ev) && ev.type == SDL_QUIT) {
+			audioQ.quit = 1;
 			break;
 		}
 	}
