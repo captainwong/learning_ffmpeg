@@ -18,6 +18,9 @@
     <ClCompile Include="003.playing_sound_sdl1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dranger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sdl1.h">

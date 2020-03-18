@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="003.playing_sound_sdl1.cpp" />
+    <ClCompile Include="dranger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ffmpeg3.h" />

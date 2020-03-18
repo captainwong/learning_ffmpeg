@@ -19,33 +19,30 @@ struct PacketQueue {
 	}
 
 	int put(AVPacket* pkt) {
-		//if (av_packet_ref(pkt) < 0) { return -1; }
-		//AVPacket* t = (AVPacket*)av_malloc(sizeof(AVPacket));
-		// *t = *pkt;
-		//assert(0 == memcmp(t, pkt, sizeof(AVPacket)));
-
+		AVPacket* pkt1 = (AVPacket*)av_malloc(sizeof(AVPacket));
+		if (av_packet_ref(pkt1, pkt) < 0) { return -1; }
+		*pkt1 = *pkt;
+		assert(0 == memcmp(pkt1, pkt, sizeof(AVPacket)));
 		SDL_LockMutex(mutex);
-		q.push(pkt);
-		size += pkt->size;
+		q.push(pkt1);
+		size += pkt1->size;
 		SDL_CondSignal(cond);
 		SDL_UnlockMutex(mutex);
 		return 0;
 	}
 
-	int get(AVPacket*& pkt, int block) {
+	int get(AVPacket* pkt, int block) {
 		int ret = -1;
 		SDL_LockMutex(mutex);
 		while (1) {
 			if (quit) { ret = -1; break; }
 
 			if (!q.empty()) {
-				/*auto pkt1 = q.front(); q.pop();
+				auto pkt1 = q.front(); q.pop();
 				*pkt = *pkt1;
 				assert(0 == memcmp(pkt1, pkt, sizeof(AVPacket)));
 				size -= pkt1->size;
-				av_free(pkt1);*/
-				pkt = q.front(); q.pop();
-				size -= pkt->size;
+				//av_free(pkt1);
 				ret = 1;
 				break;
 			} else if (!block) {
@@ -64,7 +61,7 @@ PacketQueue audioQ = {};
 
 int audioDecodeFrame(AVCodecContext* codecCtx, uint8_t* audioBuf, int bufSize)
 {
-	static AVPacket *pkt = NULL;
+	static AVPacket pkt;
 	static uint8_t* audioPktData = nullptr;
 	static int audioPktSize = 0;
 	static AVFrame frame;
@@ -72,7 +69,7 @@ int audioDecodeFrame(AVCodecContext* codecCtx, uint8_t* audioBuf, int bufSize)
 	while (1) {
 		while (audioPktSize > 0) {
 			int gotFrame = 0;
-			int len = avcodec_decode_audio4(codecCtx, &frame, &gotFrame, pkt);
+			int len = avcodec_decode_audio4(codecCtx, &frame, &gotFrame, &pkt);
 			if (len < 0) {
 				audioPktSize = 0;
 				break;
@@ -91,20 +88,20 @@ int audioDecodeFrame(AVCodecContext* codecCtx, uint8_t* audioBuf, int bufSize)
 			return dataSize;
 		}
 
-		if (pkt) {
-			av_packet_unref(pkt);
+		if (pkt.data) {
+			av_packet_unref(&pkt);
 		}
 
 		if (audioQ.quit) {
 			return -1;
 		}
 
-		if (audioQ.get(pkt, 1) < 0) {
+		if (audioQ.get(&pkt, 1) < 0) {
 			return -1;
 		}
 
-		audioPktData = pkt->data;
-		audioPktSize = pkt->size;
+		audioPktData = pkt.data;
+		audioPktSize = pkt.size;
 	}
 }
 
@@ -138,9 +135,9 @@ void audioCallback(void* userdata, Uint8* stream, int len)
 int main()
 {
 	//const char* file_path = R"(Z:\BodyCombat20171007200236.mp4)";
-	//const char* file_path = R"(Z:\winter10.mkv)";
+	const char* file_path = R"(Z:\winter10.mkv)";
 	//const char* file_path = "F:/CloudMusic/MV/a.mp4";
-	const char* file_path = "Z:/ONeal.mkv";
+	//const char* file_path = "Z:/ONeal.mkv";
 	//const char* file_path = "Z:/8guangboticao.mp4";
 	//const char* file_path = R"(Z:\winter.mkv)";
 
@@ -225,13 +222,25 @@ int main()
 
 	audioQ.init();
 
-	SDL_Event ev;
-	SDL_PauseAudio(0);
-	while (av_read_frame(fmtContext, packet) >= 0) {
-		if (packet->stream_index == videoStream) {
-			int gotFrame = 0;
-			avcodec_decode_video2(codecContext, frame, &gotFrame, packet);
-			if (gotFrame) {
+	auto decodeVideoPacket = [codecContext, swsContext, frame, bmp, &rect](AVPacket* packet) {
+		// decode video frame
+		int ret = avcodec_send_packet(codecContext, packet);
+		if (ret < 0) {
+			fprintfAVErrorString(ret, "Error while sending a packet to the decoder");
+			return ret;
+		}
+
+		while (ret >= 0) {
+			ret = avcodec_receive_frame(codecContext, frame);
+			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+				break;
+			} else if (ret < 0) {
+				fprintfAVErrorString(ret, "Error while receiving a frame from the decoder");
+				break;
+			}
+
+			if (ret >= 0) {
+				// convert the image from its native format to YUV
 				SDL_LockYUVOverlay(bmp);
 				AVPicture pict;
 				pict.data[0] = bmp->pixels[0];
@@ -248,9 +257,48 @@ int main()
 				rect.w = codecContext->width;
 				rect.h = codecContext->height;
 				SDL_DisplayYUVOverlay(bmp, &rect);
-				//av_packet_unref(packet);
 			}
-			av_packet_unref(packet);
+		}
+
+		return 0;
+	};
+
+	SDL_Event ev;
+	SDL_PauseAudio(0);
+	while (av_read_frame(fmtContext, packet) >= 0) {
+		if (packet->stream_index == videoStream) {
+			// Decode video frame
+			int frameFinished = 0;
+			avcodec_decode_video2(codecContext, frame, &frameFinished, packet);
+
+			// Did we get a video frame?
+			if (frameFinished) {
+				SDL_LockYUVOverlay(bmp);
+
+				AVPicture pict;
+				pict.data[0] = bmp->pixels[0];
+				pict.data[1] = bmp->pixels[2];
+				pict.data[2] = bmp->pixels[1];
+
+				pict.linesize[0] = bmp->pitches[0];
+				pict.linesize[1] = bmp->pitches[2];
+				pict.linesize[2] = bmp->pitches[1];
+
+				// Convert the image into YUV format that SDL uses
+				sws_scale(swsContext, (uint8_t const* const*)frame->data,
+						  frame->linesize, 0, codecContext->height,
+						  pict.data, pict.linesize);
+
+				SDL_UnlockYUVOverlay(bmp);
+
+				rect.x = 0;
+				rect.y = 0;
+				rect.w = codecContext->width;
+				rect.h = codecContext->height;
+				SDL_DisplayYUVOverlay(bmp, &rect);
+				av_free_packet(packet);
+				SDL_Delay(33);
+			}
 		} else if (packet->stream_index == audioStream) {
 			audioQ.put(packet);
 		} else {
