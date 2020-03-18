@@ -18,6 +18,24 @@ typedef struct PacketQueue {
     SDL_mutex* mutex;
     SDL_cond* cond;
 
+    /* packet queue handling */
+    int init()
+    {
+        memset(this, 0, sizeof(PacketQueue));
+        mutex = SDL_CreateMutex();
+        if (!mutex) {
+            av_log(NULL, AV_LOG_FATAL, "SDL_CreateMutex(): %s\n", SDL_GetError());
+            return AVERROR(ENOMEM);
+        }
+        cond = SDL_CreateCond();
+        if (!cond) {
+            av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
+            return AVERROR(ENOMEM);
+        }
+        abort_request = 1;
+        return 0;
+    }
+
     int put_private(AVPacket* pkt)
     {
         if (abort_request)
@@ -69,25 +87,7 @@ typedef struct PacketQueue {
         pkt->stream_index = stream_index;
         return put(pkt);
     }
-
-    /* packet queue handling */
-    int init()
-    {
-        memset(this, 0, sizeof(PacketQueue));
-        mutex = SDL_CreateMutex();
-        if (!mutex) {
-            av_log(NULL, AV_LOG_FATAL, "SDL_CreateMutex(): %s\n", SDL_GetError());
-            return AVERROR(ENOMEM);
-        }
-        cond = SDL_CreateCond();
-        if (!cond) {
-            av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
-            return AVERROR(ENOMEM);
-        }
-        abort_request = 1;
-        return 0;
-    }
-
+    
     void flush()
     {
         MyAVPacketList* pkt, * pkt1;
@@ -116,11 +116,8 @@ typedef struct PacketQueue {
     void abort()
     {
         SDL_LockMutex(mutex);
-
         abort_request = 1;
-
         SDL_CondSignal(cond);
-
         SDL_UnlockMutex(mutex);
     }
 

@@ -2,7 +2,6 @@
 
 int FrameQueue::init(PacketQueue* pktq, int max_size, int keep_last)
 {
-    int i;
     memset(this, 0, sizeof(FrameQueue));
     if (!(this->mutex = SDL_CreateMutex())) {
         av_log(NULL, AV_LOG_FATAL, "SDL_CreateMutex(): %s\n", SDL_GetError());
@@ -15,7 +14,7 @@ int FrameQueue::init(PacketQueue* pktq, int max_size, int keep_last)
     this->pktq = pktq;
     this->max_size = FFMIN(max_size, FRAME_QUEUE_SIZE);
     this->keep_last = !!keep_last;
-    for (i = 0; i < this->max_size; i++)
+    for (int i = 0; i < this->max_size; i++)
         if (!(this->queue[i].frame = av_frame_alloc()))
             return AVERROR(ENOMEM);
     return 0;
@@ -23,8 +22,7 @@ int FrameQueue::init(PacketQueue* pktq, int max_size, int keep_last)
 
 void FrameQueue::destory()
 {
-    int i;
-    for (i = 0; i < this->max_size; i++) {
+    for (int i = 0; i < this->max_size; i++) {
         Frame* vp = &this->queue[i];
         frame_queue_unref_item(vp);
         av_frame_free(&vp->frame);
