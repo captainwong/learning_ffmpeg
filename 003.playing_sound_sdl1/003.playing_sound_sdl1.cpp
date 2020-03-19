@@ -59,7 +59,9 @@ struct PacketQueue {
 
 PacketQueue audioQ = {};
 
-int audioDecodeFrame(AVCodecContext* codecCtx, uint8_t* audioBuf, int bufSize)
+SwrContext* swrContext = nullptr;
+
+int audioDecodeFrame(AVCodecContext* aCodecContext, uint8_t* audioBuf, int bufSize)
 {
 	static AVPacket pkt;
 	static uint8_t* audioPktData = nullptr;
@@ -67,6 +69,42 @@ int audioDecodeFrame(AVCodecContext* codecCtx, uint8_t* audioBuf, int bufSize)
 	static AVFrame frame;
 
 	while (1) {
+		if (audioQ.quit) {
+			return -1;
+		}
+
+		if (audioQ.get(&pkt, 1) < 0) {
+			return -1;
+		}
+
+		int ret = avcodec_send_packet(aCodecContext, &pkt);
+		if (ret < 0) {
+			fprintfAVErrorString(ret, "Error while sending a packet to the decoder");
+			return ret;
+		}
+
+		while (ret >= 0) {
+			ret = avcodec_receive_frame(aCodecContext, &frame);
+			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+				break;
+			} else if (ret < 0) {
+				fprintfAVErrorString(ret, "Error while receiving a frame from the decoder");
+				break;
+			}
+
+			if (ret >= 0) {
+
+				ret = swr_convert(swrContext, &audioBuffer, maxAudioFrameSize, (const uint8_t**)frame->data, frame->nb_samples);
+				if (ret < 0) {
+					fprintfAVErrorString(ret, "swr_convert error");
+					return ret;
+				}
+				audioPos = audioChunk = audioBuffer;
+				audioLen = audioBufferSize;
+
+			}
+		}
+
 		while (audioPktSize > 0) {
 			int gotFrame = 0;
 			int len = avcodec_decode_audio4(codecCtx, &frame, &gotFrame, &pkt);
@@ -176,7 +214,7 @@ int main()
 	av_dump_format(fmtContext, 0, file_path, 0);
 
 	// allocate audio frame
-	AVFrame* frame = av_frame_alloc();
+	//AVFrame* frame = av_frame_alloc();
 	AVPacket* packet = av_packet_alloc();
 
 	// initialize SWS context for software scaling
@@ -206,12 +244,30 @@ int main()
 	rect.h = codecContext->height;
 
 	// set audio settings from codec info
+
+	// 输出的通道布局为双通道
+	constexpr auto outChannellayout = AV_CH_LAYOUT_STEREO;
+	// 输出的声音格式
+	constexpr auto outSampleFormat = AV_SAMPLE_FMT_S16;
+	// 输出的采样率
+	constexpr auto outSampleRate = 44100;
+	// 单个通道中的采样数
+	const auto outNbSamples = aCodecContext->frame_size;
+	// 输出的声道数
+	const auto outNbChannels = av_get_channel_layout_nb_channels(outChannellayout);
+	// 缓冲区长度 bytes, 48kHz 32bit, 48000 * 32 / 8
+	constexpr auto maxAudioFrameSize = 192000;
+
+	// determine required buffer size and allocate buffer
+	int audioBufferSize = av_samples_get_buffer_size(nullptr, outNbChannels, outNbSamples, outSampleFormat, 1);
+	uint8_t* audioBuffer = (uint8_t*)av_malloc(maxAudioFrameSize * 2); // 双声道
+
 	SDL_AudioSpec wantedSpec;
-	wantedSpec.freq = aCodecContext->sample_rate;
+	wantedSpec.freq = outSampleRate;
 	wantedSpec.format = AUDIO_S16SYS;
-	wantedSpec.channels = aCodecContext->channels;
+	wantedSpec.channels = outNbChannels;
 	wantedSpec.silence = 0;
-	wantedSpec.samples = SDL_AUDIO_BUFFER_SIZE;
+	wantedSpec.samples = outNbSamples;
 	wantedSpec.callback = audioCallback;
 	wantedSpec.userdata = aCodecContext;
 
@@ -220,9 +276,24 @@ int main()
 		exit(1);
 	}
 
+	swrContext = swr_alloc_set_opts(nullptr,
+												outChannellayout,
+												outSampleFormat,
+												outSampleRate,
+												av_get_default_channel_layout(aCodecContext->channels),
+												aCodecContext->sample_fmt,
+												aCodecContext->sample_rate,
+												0,
+												nullptr);
+	int ret = swr_init(swrContext);
+	if (ret < 0) {
+		fprintfAVErrorString(ret, "swr_init failed");
+		exit(1);
+	}
+
 	audioQ.init();
 
-	auto decodeVideoPacket = [codecContext, swsContext, frame, bmp, &rect](AVPacket* packet) {
+	auto decodeVideoPacket = [codecContext, swsContext, bmp, &rect](AVPacket* packet) {
 		// decode video frame
 		int ret = avcodec_send_packet(codecContext, packet);
 		if (ret < 0) {
@@ -230,8 +301,9 @@ int main()
 			return ret;
 		}
 
+		AVFrame frame;
 		while (ret >= 0) {
-			ret = avcodec_receive_frame(codecContext, frame);
+			ret = avcodec_receive_frame(codecContext, &frame);
 			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
 				break;
 			} else if (ret < 0) {
@@ -250,7 +322,7 @@ int main()
 				pict.linesize[1] = bmp->pitches[1];
 				pict.linesize[2] = bmp->pitches[2];
 
-				sws_scale(swsContext, (const uint8_t* const*)frame->data, frame->linesize, 0, codecContext->height, pict.data, pict.linesize);
+				sws_scale(swsContext, (const uint8_t* const*)frame.data, frame.linesize, 0, codecContext->height, pict.data, pict.linesize);
 				SDL_UnlockYUVOverlay(bmp);
 
 				rect.x = rect.y = 0;
@@ -267,37 +339,8 @@ int main()
 	SDL_PauseAudio(0);
 	while (av_read_frame(fmtContext, packet) >= 0) {
 		if (packet->stream_index == videoStream) {
-			// Decode video frame
-			int frameFinished = 0;
-			avcodec_decode_video2(codecContext, frame, &frameFinished, packet);
-
-			// Did we get a video frame?
-			if (frameFinished) {
-				SDL_LockYUVOverlay(bmp);
-
-				AVPicture pict;
-				pict.data[0] = bmp->pixels[0];
-				pict.data[1] = bmp->pixels[2];
-				pict.data[2] = bmp->pixels[1];
-
-				pict.linesize[0] = bmp->pitches[0];
-				pict.linesize[1] = bmp->pitches[2];
-				pict.linesize[2] = bmp->pitches[1];
-
-				// Convert the image into YUV format that SDL uses
-				sws_scale(swsContext, (uint8_t const* const*)frame->data,
-						  frame->linesize, 0, codecContext->height,
-						  pict.data, pict.linesize);
-
-				SDL_UnlockYUVOverlay(bmp);
-
-				rect.x = 0;
-				rect.y = 0;
-				rect.w = codecContext->width;
-				rect.h = codecContext->height;
-				SDL_DisplayYUVOverlay(bmp, &rect);
-				av_free_packet(packet);
-				SDL_Delay(33);
+			if (decodeVideoPacket(packet) < 0) {
+				break;
 			}
 		} else if (packet->stream_index == audioStream) {
 			audioQ.put(packet);
@@ -313,7 +356,7 @@ int main()
 
 	SDL_Quit();
 
-	av_frame_free(&frame);
+	//av_frame_free(&frame);
 	av_packet_unref(packet);
 	avcodec_free_context(&codecContext);
 	avcodec_free_context(&aCodecContext);
