@@ -40,7 +40,7 @@ bool xdemuxer::open(const char* url)
 	// Õ¯¬Á—”≥Ÿ ±º‰
 	av_dict_set(&opts, "max_delay", "500", 0);
 
-	std::lock_guard<std::mutex> lg(mutex);
+	std::lock_guard<std::mutex> lg(mutex_);
 	int ret = avformat_open_input(&ic_, url, 0, &opts);
 	if (ret != 0) {
 		char buf[AV_ERROR_MAX_STRING_SIZE];
@@ -86,7 +86,7 @@ bool xdemuxer::open(const char* url)
 
 void xdemuxer::close()
 {
-	std::lock_guard<std::mutex> lg(mutex);
+	std::lock_guard<std::mutex> lg(mutex_);
 	if (ic_) {
 		avformat_close_input(&ic_);
 	}
@@ -95,7 +95,7 @@ void xdemuxer::close()
 
 void xdemuxer::clear()
 {
-	std::lock_guard<std::mutex> lg(mutex);
+	std::lock_guard<std::mutex> lg(mutex_);
 	if (ic_) {
 		avformat_flush(ic_);
 	}
@@ -103,7 +103,7 @@ void xdemuxer::clear()
 
 AVPacket* xdemuxer::read()
 {
-	std::lock_guard<std::mutex> lg(mutex);
+	std::lock_guard<std::mutex> lg(mutex_);
 	AVPacket* pkt = nullptr;
 	do {
 		if (!ic_) { break; }
@@ -144,13 +144,13 @@ AVPacket* xdemuxer::readVideo()
 
 bool xdemuxer::isAudio(AVPacket* pkt)
 {
-	std::lock_guard<std::mutex> lg(mutex);
+	std::lock_guard<std::mutex> lg(mutex_);
 	return pkt && pkt->stream_index == audioStream_;
 }
 
 AVCodecParameters* xdemuxer::getVideoParam()
 {
-	std::lock_guard<std::mutex> lg(mutex);
+	std::lock_guard<std::mutex> lg(mutex_);
 	if (ic_) {
 		auto param = avcodec_parameters_alloc();
 		avcodec_parameters_copy(param, ic_->streams[videoStream_]->codecpar);
@@ -161,7 +161,7 @@ AVCodecParameters* xdemuxer::getVideoParam()
 
 AVCodecParameters* xdemuxer::getAudioParam()
 {
-	std::lock_guard<std::mutex> lg(mutex);
+	std::lock_guard<std::mutex> lg(mutex_);
 	if (ic_) {
 		auto param = avcodec_parameters_alloc();
 		avcodec_parameters_copy(param, ic_->streams[audioStream_]->codecpar);
@@ -172,7 +172,7 @@ AVCodecParameters* xdemuxer::getAudioParam()
 
 bool xdemuxer::seek(double pos)
 {
-	std::lock_guard<std::mutex> lg(mutex);
+	std::lock_guard<std::mutex> lg(mutex_);
 	if (!ic_) { return false; }
 	avformat_flush(ic_);
 	long long seekPos = ic_->streams[videoStream_]->duration * pos;

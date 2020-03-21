@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="QtFFmpegPlayer.cpp" />
+    <ClCompile Include="xdecoder.cpp" />
     <ClCompile Include="xdemuxer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +101,7 @@
     <QtRcc Include="QtFFmpegPlayer.qrc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="xdecoder.h" />
     <ClInclude Include="xdemuxer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

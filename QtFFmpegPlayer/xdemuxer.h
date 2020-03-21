@@ -2,9 +2,9 @@
 
 #include <mutex>
 
+struct AVCodecParameters;
 struct AVFormatContext;
 struct AVPacket;
-struct AVCodecParameters;
 
 /**
 * ½â·â×°
@@ -72,7 +72,7 @@ public:
 	int channels() const { return channels_; }
 
 protected:
-	std::mutex mutex = {};
+	std::mutex mutex_ = {};
 	AVFormatContext* ic_ = nullptr;
 	int videoStream_ = -1;
 	int audioStream_ = -1;

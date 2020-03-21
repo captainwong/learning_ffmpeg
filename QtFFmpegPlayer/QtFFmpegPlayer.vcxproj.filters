@@ -34,6 +34,9 @@
     <ClCompile Include="xdemuxer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="xdecoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtFFmpegPlayer.h">
@@ -52,6 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xdemuxer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xdecoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
