@@ -102,6 +102,7 @@
     <QtRcc Include="QtFFmpegPlayer.qrc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IVideoCall.h" />
     <ClInclude Include="xdecoder.h" />
     <ClInclude Include="xdemuxer.h" />
     <ClInclude Include="xresampler.h" />

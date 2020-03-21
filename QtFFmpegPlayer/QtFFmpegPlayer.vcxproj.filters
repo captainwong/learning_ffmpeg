@@ -66,5 +66,8 @@
     <ClInclude Include="xresampler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IVideoCall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
