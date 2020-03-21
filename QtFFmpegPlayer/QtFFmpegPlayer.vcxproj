@@ -91,6 +91,7 @@
     <ClCompile Include="xdecoder.cpp" />
     <ClCompile Include="xdemuxer.cpp" />
     <ClCompile Include="xresampler.cpp" />
+    <ClCompile Include="XVideoWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtFFmpegPlayer.h" />
@@ -106,6 +107,7 @@
     <ClInclude Include="xdecoder.h" />
     <ClInclude Include="xdemuxer.h" />
     <ClInclude Include="xresampler.h" />
+    <QtMoc Include="XVideoWidget.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

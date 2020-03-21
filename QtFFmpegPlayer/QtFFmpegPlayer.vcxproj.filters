@@ -40,9 +40,15 @@
     <ClCompile Include="xresampler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="XVideoWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtFFmpegPlayer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="XVideoWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
