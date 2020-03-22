@@ -38,7 +38,7 @@ prebuild by [zeranoe](https://ffmpeg.zeranoe.com/builds/), 4.2.2, 20200311-36aae
     ```
 * 使用 `ffmpeg` 推流：
     ```bash
-    `ffmpeg -re -i test.mp4 -acodec aac -f rtmp://192.168.1.168:10086/live/test`
+    ffmpeg -re -i test.mp4 -acodec aac -f rtmp://192.168.1.168:10086/live/test
     ```
 * 随便找个能播放 `rtmp` 流的播放器测试下。
 
