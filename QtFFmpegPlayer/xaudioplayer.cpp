@@ -10,12 +10,12 @@ public:
 	virtual ~qaudioplayer() {}
 
 	//! ´ò¿ªÒôÆµ²¥·Å
-	virtual bool open(int sampleRate = 44100, int sampleSize = 16, int channels = 2) override {
+	virtual bool open(int sampleRate = 44100, int channels = 2) override {
 		close();
 
 		QAudioFormat fmt;
 		fmt.setSampleRate(sampleRate);
-		fmt.setSampleSize(sampleSize);
+		fmt.setSampleSize(sampleSize_);
 		fmt.setChannelCount(channels);
 		fmt.setCodec("audio/pcm");
 		fmt.setByteOrder(QAudioFormat::LittleEndian);
@@ -23,7 +23,6 @@ public:
 
 		std::lock_guard<std::mutex> lg(mutex);
 		sampleRate_ = sampleRate;
-		sampleSize_ = sampleSize;
 		channels_ = channels;
 		output = new QAudioOutput(fmt);
 		io = output->start();

@@ -8,7 +8,7 @@ public:
 	static xaudioplayer* instance();
 
 	//! 打开音频播放
-	virtual bool open(int sampleRate = 44100, int sampleSize = 16, int channels = 2) = 0;
+	virtual bool open(int sampleRate = 44100, int channels = 2) = 0;
 	virtual void close() = 0;
 	virtual void clear() = 0;
 	//! 获取缓冲区中还没有播放的数据时长（毫秒）

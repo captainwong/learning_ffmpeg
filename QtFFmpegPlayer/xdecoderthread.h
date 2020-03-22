@@ -3,6 +3,7 @@
 #include <QThread>
 #include <mutex>
 #include <queue>
+#include <atomic>
 
 struct AVPacket;
 class xdecoder;
@@ -23,5 +24,5 @@ protected:
 	std::queue<AVPacket*> pkts_;
 	std::mutex mutex_{};
 	int maxQ_ = 100;
-	bool isExit_ = false;
+	std::atomic_bool isExit_{ false };
 };
