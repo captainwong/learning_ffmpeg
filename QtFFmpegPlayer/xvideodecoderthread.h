@@ -2,12 +2,13 @@
 
 #include "xdecoderthread.h"
 #include "IVideoCall.h"
+#include <atomic>
 
 struct AVPacket;
 struct AVCodecParameters;
 class xdecoder;
 
-class xvideodecoderthread : xdecoderthread
+class xvideodecoderthread : public xdecoderthread
 {
 public:
 	xvideodecoderthread();
@@ -15,6 +16,8 @@ public:
 
 	//! 开始解码。总是释放param
 	bool open(AVCodecParameters* param, IVideoCall* call, int width, int height);
+
+	void setSyncPts(int64_t pts) { syncPts_ = pts; }
 
 	//! 当pkt->pts >= seekPts时解码并显示画面
 	bool repaintPts(AVPacket* pkt, int64_t seekPts);
@@ -24,5 +27,5 @@ public:
 protected:
 	IVideoCall* call_{ nullptr };
 	std::mutex vmutex_{};
-	int64_t syncPts_ = 0;
+	std::atomic<int64_t> syncPts_{ 0 };
 };

@@ -48,12 +48,10 @@ void xdecoderthread::clear()
 void xdecoderthread::close()
 {
 	clear();
-	
-	std::lock_guard<std::mutex> lg(mutex_);
-	
 	isExit_ = true;
 	wait();
 
+	std::lock_guard<std::mutex> lg(mutex_);
 	decoder_->close();
 	delete decoder_;
 	decoder_ = nullptr;

@@ -93,6 +93,7 @@
     <ClCompile Include="xdecoder.cpp" />
     <ClCompile Include="xdecoderthread.cpp" />
     <ClCompile Include="xdemuxer.cpp" />
+    <ClCompile Include="xdemuxerthread.cpp" />
     <ClCompile Include="xresampler.cpp" />
     <ClCompile Include="xvideodecoderthread.cpp" />
     <ClCompile Include="XVideoWidget.cpp" />
@@ -113,6 +114,7 @@
     <ClInclude Include="xdecoder.h" />
     <ClInclude Include="xdecoderthread.h" />
     <ClInclude Include="xdemuxer.h" />
+    <ClInclude Include="xdemuxerthread.h" />
     <ClInclude Include="xresampler.h" />
     <ClInclude Include="xvideodecoderthread.h" />
     <QtMoc Include="XVideoWidget.h" />

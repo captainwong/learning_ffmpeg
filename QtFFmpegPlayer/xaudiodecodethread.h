@@ -7,13 +7,14 @@ struct AVCodecParameters;
 class xaudioplayer;
 class xresampler;
 
-class xaudiodecoderthread : xdecoderthread
+class xaudiodecoderthread : public xdecoderthread
 {
 public:
 	xaudiodecoderthread();
 	virtual ~xaudiodecoderthread();
 
 	bool open(AVCodecParameters* param, int sampleRate, int channels);
+	int64_t pts() const { return pts_; }
 	
 	virtual void close() override;
 	virtual void clear() override;
