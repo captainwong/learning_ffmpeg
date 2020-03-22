@@ -59,5 +59,7 @@ void xdecoderthread::close()
 
 void xdecoderthread::pause(bool isPause)
 {
+	//printf("xdecoderthread::pause enter\n");
 	isPaused_ = isPause;
+	//printf("xdecoderthread::pause leave\n");
 }

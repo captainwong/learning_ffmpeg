@@ -67,11 +67,13 @@ void xaudiodecoderthread::clear()
 
 void xaudiodecoderthread::pause(bool isPause)
 {
+	//printf("xaudiodecoderthread::pause enter\n");
 	xdecoderthread::pause(isPause);
-	std::lock_guard<std::mutex> lg(amutex_);
+	//std::lock_guard<std::mutex> lg(amutex_);
 	if (player_) {
 		player_->pause(isPause);
 	}
+	//printf("xaudiodecoderthread::pause leave\n");
 }
 
 void xaudiodecoderthread::run()
@@ -109,7 +111,7 @@ void xaudiodecoderthread::run()
 
 			while (!isExit_) {
 				if (isPaused_ || player_->getFreeSize() < size) {
-					msleep(1);
+					msleep(5);
 					continue;
 				}
 				player_->write((const char*)pcm, size);

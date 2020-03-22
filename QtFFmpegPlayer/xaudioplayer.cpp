@@ -74,8 +74,10 @@ public:
 
 	virtual void pause(bool isPause) override {
 		std::lock_guard<std::mutex> lg(mutex);
+		//printf("qaudioplayer::pause enter\n");
 		if (!output) { return; }
 		isPause ? output->suspend() : output->resume();
+		//printf("qaudioplayer::pause leave\n");
 	}
 
 private:

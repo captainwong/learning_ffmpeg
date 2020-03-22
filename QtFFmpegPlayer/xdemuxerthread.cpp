@@ -95,9 +95,14 @@ void xdemuxerthread::seek(double pos)
 void xdemuxerthread::pause(bool isPause)
 {
 	isPaused_ = isPause;
-	std::lock_guard<std::mutex> lg(mutex_);
-	if (adt_) { adt_->pause(isPause); }
-	if (vdt_) { vdt_->pause(isPause); }
+
+	{
+		std::lock_guard<std::mutex> lg(mutex_);
+		//printf("xdemuxerthread::pause enter\n");
+		if (adt_) { adt_->pause(isPause); }
+		if (vdt_) { vdt_->pause(isPause); }
+		//printf("xdemuxerthread::pause leave\n");
+	}	
 }
 
 void xdemuxerthread::run()

@@ -20,12 +20,13 @@ QtFFmpegPlayer::~QtFFmpegPlayer()
 
 void QtFFmpegPlayer::updatePlayPause(bool isPaused)
 {
-	ui.pushButtonPlayPause->setText(isPaused ? "播放" : "暂停");
+	ui.pushButtonPlayPause->setText(isPaused ? "Play" : "Pause");
 }
 
 void QtFFmpegPlayer::slotPushButtonOpenFile()
 {
-	QString file = QFileDialog::getOpenFileName(this, "选择视频文件");
+	QString file = QFileDialog::getOpenFileName(this, "Choose Video File");
+	//file = "rtmp://192.168.1.168:10086/live/test";
 	if (file.isEmpty()) { return; }
 	setWindowTitle(file);
 	if (!dt.open(file.toLocal8Bit(), ui.openGLWidget)) {
@@ -37,6 +38,9 @@ void QtFFmpegPlayer::slotPushButtonOpenFile()
 
 void QtFFmpegPlayer::slotPushButtonPlayPause()
 {
-	dt.pause(!dt.isPaused());
-	updatePlayPause(dt.isPaused());
+	qDebug() << "slotPushButtonPlayPause";
+	bool p = !dt.isPaused();
+	dt.pause(p);
+	updatePlayPause(p);
+	qDebug() << "pause" << p;
 }
