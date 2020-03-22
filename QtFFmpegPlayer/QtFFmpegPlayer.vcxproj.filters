@@ -52,6 +52,9 @@
     <ClCompile Include="xaudiodecodethread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="xvideodecoderthread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtFFmpegPlayer.h">
@@ -91,6 +94,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xaudiodecodethread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xvideodecoderthread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

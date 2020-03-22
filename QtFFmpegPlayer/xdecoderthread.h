@@ -18,6 +18,7 @@ public:
 	virtual AVPacket* pop();
 	virtual void clear();
 	virtual void close();
+	virtual void pause(bool isPause);
 
 protected:
 	xdecoder* decoder_{ nullptr };
@@ -25,4 +26,5 @@ protected:
 	std::mutex mutex_{};
 	int maxQ_ = 100;
 	std::atomic_bool isExit_{ false };
+	std::atomic_bool isPaused_{ false };
 };

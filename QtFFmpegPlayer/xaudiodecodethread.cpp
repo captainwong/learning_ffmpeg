@@ -67,7 +67,7 @@ void xaudiodecoderthread::clear()
 
 void xaudiodecoderthread::pause(bool isPause)
 {
-	isPaused_ = isPause; 
+	xdecoderthread::pause(isPause);
 	std::lock_guard<std::mutex> lg(amutex_);
 	if (player_) {
 		player_->pause(isPause);

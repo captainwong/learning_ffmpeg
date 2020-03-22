@@ -58,3 +58,8 @@ void xdecoderthread::close()
 	delete decoder_;
 	decoder_ = nullptr;
 }
+
+void xdecoderthread::pause(bool isPause)
+{
+	isPaused_ = isPause;
+}

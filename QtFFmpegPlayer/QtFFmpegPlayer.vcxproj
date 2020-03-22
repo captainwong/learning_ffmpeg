@@ -94,6 +94,7 @@
     <ClCompile Include="xdecoderthread.cpp" />
     <ClCompile Include="xdemuxer.cpp" />
     <ClCompile Include="xresampler.cpp" />
+    <ClCompile Include="xvideodecoderthread.cpp" />
     <ClCompile Include="XVideoWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +114,7 @@
     <ClInclude Include="xdecoderthread.h" />
     <ClInclude Include="xdemuxer.h" />
     <ClInclude Include="xresampler.h" />
+    <ClInclude Include="xvideodecoderthread.h" />
     <QtMoc Include="XVideoWidget.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
