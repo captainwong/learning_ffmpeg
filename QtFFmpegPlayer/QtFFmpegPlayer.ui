@@ -23,6 +23,32 @@
     </rect>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButtonOpenFile">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>550</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Open File</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonPlayPause">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>550</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Play</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -35,5 +61,42 @@
  <resources>
   <include location="QtFFmpegPlayer.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonOpenFile</sender>
+   <signal>clicked()</signal>
+   <receiver>QtFFmpegPlayerClass</receiver>
+   <slot>slotPushButtonOpenFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>254</x>
+     <y>564</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>844</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonPlayPause</sender>
+   <signal>clicked()</signal>
+   <receiver>QtFFmpegPlayerClass</receiver>
+   <slot>slotPushButtonPlayPause()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>397</x>
+     <y>565</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>564</x>
+     <y>806</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>slotPushButtonOpenFile()</slot>
+  <slot>slotPushButtonPlayPause()</slot>
+ </slots>
 </ui>

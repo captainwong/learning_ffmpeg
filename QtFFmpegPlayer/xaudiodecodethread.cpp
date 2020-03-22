@@ -23,7 +23,7 @@ bool xaudiodecoderthread::open(AVCodecParameters* param, int sampleRate, int cha
 	std::lock_guard<std::mutex> lg(amutex_);
 	pts_ = 0;
 
-	bool ret = false;
+	bool ret = true;
 
 	if (!resampler_->open(param, false)) {
 		ret = false;

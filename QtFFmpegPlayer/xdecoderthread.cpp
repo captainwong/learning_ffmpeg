@@ -18,12 +18,12 @@ void xdecoderthread::push(AVPacket* pkt)
 {
 	if (!pkt) { return; }
 	while (!isExit_) {
+		msleep(1);
 		std::lock_guard<std::mutex> lg(mutex_);
 		if (pkts_.size() < maxQ_) {
 			pkts_.push(pkt);
 			return;
 		}
-		msleep(1);
 	}
 }
 

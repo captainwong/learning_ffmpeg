@@ -6,6 +6,7 @@
 
 
 xdemuxerthread::xdemuxerthread()
+	: QThread()
 {
 }
 
@@ -39,7 +40,9 @@ bool xdemuxerthread::open(const char* url, IVideoCall* call)
 void xdemuxerthread::start()
 {
 	std::lock_guard<std::mutex> lg(mutex_);
-	if (!demuxer_) { return; }
+	if (!demuxer_) { demuxer_ = new xdemuxer(); }
+	if (!vdt_) { vdt_ = new xvideodecoderthread(); }
+	if (!adt_) { adt_ = new xaudiodecoderthread(); }
 	QThread::start();
 	if (vdt_) { vdt_->start(); }
 	if (adt_) { adt_->start(); }

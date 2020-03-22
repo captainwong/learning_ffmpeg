@@ -62,7 +62,7 @@
       <AdditionalIncludeDirectories>E:/dev_ffmpeg/ffmpeg-20200311-36aaee2-win32-dev/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>E:\dev_ffmpeg\ffmpeg-20200311-36aaee2-win32-dev\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

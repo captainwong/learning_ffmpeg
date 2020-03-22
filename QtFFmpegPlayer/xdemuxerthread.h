@@ -22,7 +22,7 @@ public:
 	virtual void close();
 	virtual void seek(double pos);
 	virtual void pause(bool isPause);
-
+	virtual bool isPaused() const { return isPaused_; }
 	virtual void run() override;
 
 protected:

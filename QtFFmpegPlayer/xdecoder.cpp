@@ -102,9 +102,11 @@ AVFrame* xdecoder::recv()
 	AVFrame* frame = av_frame_alloc();
 	int ret = avcodec_receive_frame(context_, frame);
 	if (ret != 0) {
-		char buf[AV_ERROR_MAX_STRING_SIZE];
-		av_strerror(ret, buf, sizeof(buf) - 1);
-		fprintf(stderr, "Receive frame failed: %s\n", buf);
+		if (ret != AVERROR(EAGAIN)) {
+			char buf[AV_ERROR_MAX_STRING_SIZE];
+			av_strerror(ret, buf, sizeof(buf) - 1);
+			fprintf(stderr, "Receive frame failed: %s\n", buf);
+		}		
 		av_frame_free(&frame);
 	} else {
 		pts_ = frame->pts;

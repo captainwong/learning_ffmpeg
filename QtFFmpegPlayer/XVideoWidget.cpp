@@ -90,26 +90,29 @@ void XVideoWidget::doInit(int width, int height)
 void XVideoWidget::doRepaint(AVFrame* frame)
 {
 	if (!frame) { return; }
-	std::lock_guard<std::mutex> lg(mutex_);
 
-	if (!data_[0] || width_ * height_ == 0 || frame->width != width_ || frame->height != height_) {
-		av_frame_free(&frame);
-		return;
-	}
+	{
+		std::lock_guard<std::mutex> lg(mutex_);
 
-	if (width_ == frame->linesize[0]) {
-		memcpy(data_[0], frame->data[0], width_ * height_);		// Y
-		memcpy(data_[1], frame->data[1], width_ * height_ / 4);	// U
-		memcpy(data_[2], frame->data[2], width_ * height_ / 4);	// V
-	} else {
-		for (int i = 0; i < height_; i++) { // Y
-			memcpy(data_[0] + width_ * i, frame->data[0] + frame->linesize[0] * i, width_);
+		if (!data_[0] || width_ * height_ == 0 || frame->width != width_ || frame->height != height_) {
+			av_frame_free(&frame);
+			return;
 		}
-		for (int i = 0; i < height_ / 2; i++) { // U
-			memcpy(data_[1] + width_ / 2 * i, frame->data[1] + frame->linesize[1] * i, width_);
-		}
-		for (int i = 0; i < height_ / 2; i++) { // V
-			memcpy(data_[2] + width_ / 2 * i, frame->data[2] + frame->linesize[2] * i, width_);
+
+		if (width_ == frame->linesize[0]) {
+			memcpy(data_[0], frame->data[0], width_ * height_);		// Y
+			memcpy(data_[1], frame->data[1], width_ * height_ / 4);	// U
+			memcpy(data_[2], frame->data[2], width_ * height_ / 4);	// V
+		} else {
+			for (int i = 0; i < height_; i++) { // Y
+				memcpy(data_[0] + width_ * i, frame->data[0] + frame->linesize[0] * i, width_);
+			}
+			for (int i = 0; i < height_ / 2; i++) { // U
+				memcpy(data_[1] + width_ / 2 * i, frame->data[1] + frame->linesize[1] * i, width_);
+			}
+			for (int i = 0; i < height_ / 2; i++) { // V
+				memcpy(data_[2] + width_ / 2 * i, frame->data[2] + frame->linesize[2] * i, width_);
+			}
 		}
 	}
 
@@ -119,6 +122,7 @@ void XVideoWidget::doRepaint(AVFrame* frame)
 
 void XVideoWidget::initializeGL()
 {
+	qDebug() << "initializeGL";
 	std::lock_guard<std::mutex> lg(mutex_);
 
 	initializeOpenGLFunctions();
@@ -161,24 +165,22 @@ void XVideoWidget::initializeGL()
 
 void XVideoWidget::paintGL()
 {
-	std::lock_guard<std::mutex> lg(mutex_);
-
 	glActiveTexture(GL_TEXTURE0); // 0层
-	glBindTexture(GL_TEXTURE0, textures_[0]); // 绑定到Y材质
+	glBindTexture(GL_TEXTURE_2D, textures_[0]); // 绑定到Y材质
 	// 修改材质内容
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_, height_, GL_RED, GL_UNSIGNED_BYTE, data_[0]);
 	// 与shader uniform遍历关联
 	glUniform1i(uniforms_[0], 0);
 
 	glActiveTexture(GL_TEXTURE0 + 1); // 1层
-	glBindTexture(GL_TEXTURE0, textures_[1]); // 绑定到U材质
+	glBindTexture(GL_TEXTURE_2D, textures_[1]); // 绑定到U材质
 	// 修改材质内容
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_ / 2, height_ / 2, GL_RED, GL_UNSIGNED_BYTE, data_[1]);
 	// 与shader uniform遍历关联
 	glUniform1i(uniforms_[1], 1);
 
 	glActiveTexture(GL_TEXTURE0 + 2); // 2层
-	glBindTexture(GL_TEXTURE0, textures_[2]); // 绑定到V材质
+	glBindTexture(GL_TEXTURE_2D, textures_[2]); // 绑定到V材质
 	// 修改材质内容
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_ / 2, height_ / 2, GL_RED, GL_UNSIGNED_BYTE, data_[2]);
 	// 与shader uniform遍历关联
@@ -190,4 +192,5 @@ void XVideoWidget::paintGL()
 void XVideoWidget::resizeGL(int width, int height)
 {
 	std::lock_guard<std::mutex> lg(mutex_);
+	qDebug() << "resizeGL " << width << ":" << height;
 }
