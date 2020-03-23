@@ -58,12 +58,18 @@
     <ClCompile Include="xdemuxerthread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="XSlider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtFFmpegPlayer.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="XVideoWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="XSlider.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

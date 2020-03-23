@@ -25,12 +25,15 @@ public:
 	virtual bool isPaused() const { return isPaused_; }
 	virtual void run() override;
 
+	int64_t totalMs() const { return totalMs_; }
+	int64_t pts() const { return pts_; }
+
 protected:
 	std::mutex mutex_{};
 	std::atomic_bool isExit_{ false };
 	std::atomic_bool isPaused_{ false };
-	int64_t pts_ = 0;
-	int64_t totalMs_ = 0;
+	std::atomic<int64_t> pts_{ 0 };
+	std::atomic<int64_t> totalMs_{ 0 };
 	xdemuxer* demuxer_ = nullptr;
 	xvideodecoderthread* vdt_ = nullptr;
 	xaudiodecoderthread* adt_ = nullptr;

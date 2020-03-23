@@ -59,7 +59,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>E:/dev_ffmpeg/ffmpeg-20200311-36aaee2-win32-dev/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:/dev_ffmpeg/ffmpeg-20200311-36aaee2-win32-dev/include;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -75,7 +75,7 @@
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>E:/dev_ffmpeg/ffmpeg-20200311-36aaee2-win32-dev/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:/dev_ffmpeg/ffmpeg-20200311-36aaee2-win32-dev/include;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -95,6 +95,7 @@
     <ClCompile Include="xdemuxer.cpp" />
     <ClCompile Include="xdemuxerthread.cpp" />
     <ClCompile Include="xresampler.cpp" />
+    <ClCompile Include="XSlider.cpp" />
     <ClCompile Include="xvideodecoderthread.cpp" />
     <ClCompile Include="XVideoWidget.cpp" />
   </ItemGroup>
@@ -116,6 +117,7 @@
     <ClInclude Include="xdemuxer.h" />
     <ClInclude Include="xdemuxerthread.h" />
     <ClInclude Include="xresampler.h" />
+    <QtMoc Include="XSlider.h" />
     <ClInclude Include="xvideodecoderthread.h" />
     <QtMoc Include="XVideoWidget.h" />
   </ItemGroup>

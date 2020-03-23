@@ -49,6 +49,22 @@
     <string>Play</string>
    </property>
   </widget>
+  <widget class="XSlider" name="slider">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>640</y>
+     <width>1041</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>999</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -56,6 +72,11 @@
    <class>XVideoWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>XVideoWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>XSlider</class>
+   <extends>QSlider</extends>
+   <header>XSlider.h</header>
   </customwidget>
  </customwidgets>
  <resources>
@@ -94,9 +115,43 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>slider</sender>
+   <signal>sliderPressed()</signal>
+   <receiver>QtFFmpegPlayerClass</receiver>
+   <slot>slotSliderPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>591</x>
+     <y>655</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>595</x>
+     <y>827</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>slider</sender>
+   <signal>sliderReleased()</signal>
+   <receiver>QtFFmpegPlayerClass</receiver>
+   <slot>slotSliderReleased()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>751</x>
+     <y>651</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>756</x>
+     <y>860</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotPushButtonOpenFile()</slot>
   <slot>slotPushButtonPlayPause()</slot>
+  <slot>slotSliderPressed()</slot>
+  <slot>slotSliderReleased()</slot>
  </slots>
 </ui>
