@@ -63,19 +63,15 @@ bool xdemuxer::open(const char* url)
 
 	videoStream_ = av_find_best_stream(ic_, AVMEDIA_TYPE_VIDEO, -1, -1, nullptr, 0);
 	if (videoStream_ < 0) {
-		char buf[AV_ERROR_MAX_STRING_SIZE];
-		av_strerror(ret, buf, sizeof(buf) - 1);
-		fprintf(stderr, "Warning: find video stream failed: %s\n", buf);
+		fprintf(stderr, "Warning: find video stream failed\n");
 	} else {
 		width_ = ic_->streams[videoStream_]->codecpar->width;
 		height_ = ic_->streams[videoStream_]->codecpar->height;
 	}
 
 	audioStream_ = av_find_best_stream(ic_, AVMEDIA_TYPE_AUDIO, -1, -1, nullptr, 0);
-	if (videoStream_ < 0) {
-		char buf[AV_ERROR_MAX_STRING_SIZE];
-		av_strerror(ret, buf, sizeof(buf) - 1);
-		fprintf(stderr, "Warning: find audio stream failed: %s\n", buf);
+	if (audioStream_ < 0) {
+		fprintf(stderr, "Warning: find audio stream failed\n");
 	} else {
 		sampleRate_ = ic_->streams[audioStream_]->codecpar->sample_rate;
 		channels_ = ic_->streams[audioStream_]->codecpar->channels;

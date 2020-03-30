@@ -87,6 +87,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="QtFFmpegPlayer.cpp" />
     <ClCompile Include="xaudiodecodethread.cpp" />
     <ClCompile Include="xaudioplayer.cpp" />
@@ -103,6 +104,7 @@
     <QtMoc Include="QtFFmpegPlayer.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtUic Include="MainWindow.ui" />
     <QtUic Include="QtFFmpegPlayer.ui" />
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IVideoCall.h" />
+    <QtMoc Include="MainWindow.h" />
     <ClInclude Include="xaudiodecodethread.h" />
     <ClInclude Include="xaudioplayer.h" />
     <ClInclude Include="xdecoder.h" />
