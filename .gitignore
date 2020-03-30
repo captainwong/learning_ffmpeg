@@ -5,6 +5,7 @@ Documentation/
 *.exe
 *.ppm
 *.mp4
+*.mov
 
 # Qt-es
 
