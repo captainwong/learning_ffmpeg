@@ -35,8 +35,7 @@ extern "C" {
 inline void fprintfAVErrorString(int err, const char* prefix = "error") {
 	char str[AV_ERROR_MAX_STRING_SIZE] = { 0 };
 	av_make_error_string(str, AV_ERROR_MAX_STRING_SIZE, err);
-	fprintf(stderr, prefix);
-	fprintf(stderr, ": %s\n", str);
+	fprintf(stderr, "%s: %s\n", prefix, str);
 }
 
 

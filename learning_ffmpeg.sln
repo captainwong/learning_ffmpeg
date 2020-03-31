@@ -29,7 +29,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtFFmpegPlayer", "QtFFmpegP
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtMainWindow", "QtMainWindow\QtMainWindow.vcxproj", "{C81E0F2C-448A-4979-9C78-4D93B256E6A3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004.mp4_to_mov", "004.mp4_to_mov\004.mp4_to_mov.vcxproj", "{3D09F023-9F03-48A5-95E3-EB03516A6766}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004.remux", "004.remux\004.remux.vcxproj", "{3D09F023-9F03-48A5-95E3-EB03516A6766}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
