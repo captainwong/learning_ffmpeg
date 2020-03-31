@@ -107,14 +107,17 @@ int main(int argc, char** argv)
 									   (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
 			pkt.pos = -1;
 
-			av_write_frame(oc, &pkt);
-		} 
-
-		av_packet_unref(&pkt);
+			//av_write_frame(oc, &pkt);
+			av_interleaved_write_frame(oc, &pkt);
+		} else {
+			av_packet_unref(&pkt);
+		}
 	}
 
 	av_write_trailer(oc);
 	avio_close(oc->pb);
+	avformat_free_context(oc);
+	avformat_free_context(ic);
 	printf("\ndone\n");
 }
 
