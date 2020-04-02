@@ -21,17 +21,57 @@ void saveFrame(AVFrame* pFrame, int width, int height, int index)
 	fclose(f);
 }
 
-int main()
+void usage(const char* path) {
+	printf("Usage: %s input_file image_count image_format\n"
+		   "input_file   The file to extract images from\n"
+		   "image_limit  Max image files to be extracted, 0 for unlimited\n"
+		   "image_format Images' format, available formats are:\n"
+		   "\tppm     AV_PIX_FMT_RGB24\n"
+		   "\tyuv420p AV_PIX_FMT_YUV420P\n"
+		   "\trgb     AV_PIX_FMT_RGB24\n"
+		   "\tbgr     AV_PIX_FMT_BGR24\n"
+		   , path);
+}
+
+int main(int argc, char** argv)
 {
+	if (argc < 4) { usage(argv[0]); return 1; }
+
+	const auto infile = argv[1];
+	int file_limit = atoi(argv[2]);
+	if (file_limit < 0) { usage(argv[0]); return 1; }
+	else if (file_limit == 0) { file_limit = -1; }
+	AVPixelFormat out_pixel_fmt = AV_PIX_FMT_NONE;
+	const char* outfile_ext = nullptr;
+	if (0 == strcmp("ppm", argv[3])) {
+		out_pixel_fmt = AV_PIX_FMT_RGB24;
+		outfile_ext = "ppm";
+	} else if (0 == strcmp("yuv420p", argv[3])) {
+		out_pixel_fmt = AV_PIX_FMT_YUV420P;
+		outfile_ext = "yuv420p";
+	} else if (0 == strcmp("rgb", argv[3])) {
+		out_pixel_fmt = AV_PIX_FMT_RGB24;
+		outfile_ext = "rgb";
+	} else if (0 == strcmp("bgr", argv[3])) {
+		out_pixel_fmt = AV_PIX_FMT_BGR24;
+		outfile_ext = "bgr";
+	} else { usage(argv[0]); return 1; }
+
+	printf("Extracting images from '%s', max images is %s, out file format is %s, ext is %s\n", 
+		   infile, 
+		   file_limit < 0 ? "unlimited" : argv[2], 
+		   argv[3], 
+		   outfile_ext);
+
 	//const char* file_path = "F:/CloudMusic/MV/a.mp4";
-	const char* file_path = R"(C:\Users\Jack\Videos\2020-01-16_20-13-52.mkv)";
+	//const char* file_path = R"(C:\Users\Jack\Videos\2020-01-16_20-13-52.mkv)";
 
 	//av_register_all();
 
 	// open video file
 	AVFormatContext* fmtContext = nullptr;
-	if (avformat_open_input(&fmtContext, file_path, nullptr, nullptr) != 0) {
-		fprintf(stderr, "Could not open source file %s\n", file_path);
+	if (avformat_open_input(&fmtContext, infile, nullptr, nullptr) != 0) {
+		fprintf(stderr, "Could not open source file %s\n", infile);
 		exit(1);
 	}
 
@@ -47,7 +87,7 @@ int main()
 		fprintf(stderr, "Could not find video stream\n");
 		exit(1);
 	}
-	av_dump_format(fmtContext, 0, file_path, 0);
+	av_dump_format(fmtContext, 0, infile, 0);
 
 	// allocate video frame
 	AVFrame* frame = av_frame_alloc();
@@ -104,7 +144,7 @@ int main()
 						saveFrame(frameRGB, codecContext->width, codecContext->height, count);
 					} else {
 						break;
-					}					
+					}
 				}
 			}
 

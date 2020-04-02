@@ -42,3 +42,58 @@ prebuild by [zeranoe](https://ffmpeg.zeranoe.com/builds/), 4.2.2, 20200311-36aae
     ```
 * 随便找个能播放 `rtmp` 流的播放器测试下。
 
+## FFmpeg转码命令笔记
+
+### 音频提取、播放
+
+1. AAC
+    
+    `ffmpeg -i xyj.mkv -acodec aac -vn xyj.aac`
+
+2. MP3
+
+    `ffmpeg -i xyj.mkv -acodec mp3 -vn xyj.mp3`
+
+4. PCM
+
+    `ffmpeg -i xyj.mkv -vn -ar 44100 -ac 2 -f s16le xyj.pcm`
+
+    ```txt
+    -ar 44100: sample rate 44100
+    -ac 2: channels 2
+    -f s16le: signed integer, 16bit , little endien
+    ```
+
+    `ffplay -ar 44100 -ac 2 -f s16le xyj.pcm`
+
+    如果不指定 sample rate 和 channels ，播放出来有杂音
+
+### 视频提取、播放
+
+
+1. H264
+
+    `ffmpeg -i xyj.mkv -f h264 -bsf: h264_mp4toannexb xyj.h264`
+
+    `ffplay xyj.h264`
+
+2. YUV
+
+    `ffmpeg -t 00:00:10 -i xyj.mkv -an -f rawvideo -pix_fmt yuv420p -s 800x600 xyj.yuv`
+
+    ```txt
+    -t 00:00:10: 提取前10秒
+    -an: no audio
+    -f rawvideo: 不封装
+    -pix_fmt yuv420p: 编码格式yuv420p
+    -s 800x600: 视频宽高800x600，如果不指定大小，等会没法播放：两边都-s 800x600才能正确播放
+    ```
+
+    `ffplay -pix_fmt yuv420p -s 800x600 xyj.yuv`
+
+3. RGB
+
+    `ffmpeg -t 00:00:10 -i xyj.mkv -an -f rawvideo -pix_fmt rgb24 -s 800x600 xyj.rgb`
+
+    `ffplay -pix_fmt yuv420p -s 800x600 xyj.rgb`
+
