@@ -6,6 +6,7 @@ Documentation/
 *.ppm
 *.mp4
 *.mov
+*.pcm
 
 # Qt-es
 

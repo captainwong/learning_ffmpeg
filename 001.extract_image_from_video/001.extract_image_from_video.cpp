@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 											codecContext->width, 
 											codecContext->height,
 											AV_PIX_FMT_RGB24,
-											SWS_BILINEAR,
+											SWS_BICUBIC,
 											nullptr,
 											nullptr,
 											nullptr);

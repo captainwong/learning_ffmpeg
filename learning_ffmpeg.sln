@@ -31,6 +31,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtMainWindow", "QtMainWindo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004.remux", "004.remux\004.remux.vcxproj", "{3D09F023-9F03-48A5-95E3-EB03516A6766}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "005.desktop_record", "005.desktop_record\005.desktop_record.vcxproj", "{122C52EC-3141-4D2D-92FE-A3E3822EE568}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -115,6 +117,12 @@ Global
 		{3D09F023-9F03-48A5-95E3-EB03516A6766}.Release|x64.Build.0 = Release|x64
 		{3D09F023-9F03-48A5-95E3-EB03516A6766}.Release|x86.ActiveCfg = Release|Win32
 		{3D09F023-9F03-48A5-95E3-EB03516A6766}.Release|x86.Build.0 = Release|Win32
+		{122C52EC-3141-4D2D-92FE-A3E3822EE568}.Debug|x64.ActiveCfg = Debug|Win32
+		{122C52EC-3141-4D2D-92FE-A3E3822EE568}.Debug|x86.ActiveCfg = Debug|Win32
+		{122C52EC-3141-4D2D-92FE-A3E3822EE568}.Debug|x86.Build.0 = Debug|Win32
+		{122C52EC-3141-4D2D-92FE-A3E3822EE568}.Release|x64.ActiveCfg = Release|Win32
+		{122C52EC-3141-4D2D-92FE-A3E3822EE568}.Release|x86.ActiveCfg = Release|Win32
+		{122C52EC-3141-4D2D-92FE-A3E3822EE568}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
