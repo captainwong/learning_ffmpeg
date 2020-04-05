@@ -50,7 +50,7 @@ public:
 	bool addAudioStream(int inSampleRate = 44100, int inChannels = 2, ASmpFmt inSmpFmt = ASmpFmt::AV_SAMPLE_FMT_S16, int inOutNbSamples = 1024,
 						int outSampleRate = 44100, int outChannels = 2, ASmpFmt outSmpFmt = ASmpFmt::AV_SAMPLE_FMT_FLTP, int outBitRate = 64000);
 	
-	AVPacket* encodeVideo(char* rgb);
+	AVPacket* encodeVideo(char* bgra);
 	AVPacket* encodeAudio(char* pcm);
 	
 	bool writeHeader();

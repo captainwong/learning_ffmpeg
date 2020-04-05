@@ -17,11 +17,10 @@ screen_recorder* screen_recorder::getInstance(recorder_type type)
 	return nullptr;
 }
 
-bool screen_recorder::start(int outFPS, int outWidth, int outHeight)
+bool screen_recorder::start(int outFPS, int maxCachedBgra)
 {
 	outFPS_ = outFPS > 0 ? outFPS : 10;
-	outWidth_ = outWidth;
-	outHeight_ = outHeight;
+	maxCachedBgra_ = maxCachedBgra;
 	return true;
 }
 

@@ -21,9 +21,12 @@ static bool captureSceen(void* data, int w, int h)
 	return true;
 }
 
-bool screen_recorder_directx::start(int outFPS, int outWidth, int outHeight)
+bool screen_recorder_directx::start(int outFPS, int maxCachedBgra)
 {
-	__super::start(outFPS, outWidth, outHeight);
+	__super::start(outFPS, maxCachedBgra);
+
+	outWidth_ = GetSystemMetrics(SM_CXSCREEN);
+	outHeight_ = GetSystemMetrics(SM_CYSCREEN);
 
 	g_d3d = Direct3DCreate9(D3D_SDK_VERSION);
 	if (!g_d3d) { return false; }
@@ -61,15 +64,19 @@ void screen_recorder_directx::run()
 		t.restart();
 		int ms = 1000 / outFPS_;
 
+		do
 		{
 			std::lock_guard<std::mutex> lg(mutex_);
+			if (bgras_.size() >= maxCachedBgra_) {
+				break;
+			}
 			bgra p;
 			p.len = outWidth_ * outHeight_ * 4;
 			p.data = new char[p.len];
 			if (captureSceen(p.data, outWidth_, outHeight_)) {
 				bgras_.push_back(p);
 			}
-		}
+		} while (0);
 
 		ms -= t.restart();
 		if (ms <= 0 || ms > 1000) {

@@ -23,6 +23,9 @@
     <ClCompile Include="screen_recorder_directx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="desktop_recorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -90,6 +93,12 @@
       <Filter>tests</Filter>
     </ClInclude>
     <ClInclude Include="tests\test_record_screen.h">
+      <Filter>tests</Filter>
+    </ClInclude>
+    <ClInclude Include="desktop_recorder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\test_desktop_record.h">
       <Filter>tests</Filter>
     </ClInclude>
   </ItemGroup>

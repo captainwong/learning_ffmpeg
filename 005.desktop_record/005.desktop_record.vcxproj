@@ -89,6 +89,7 @@
     <ClCompile Include="audio_recorder.cpp" />
     <ClCompile Include="audio_recorder_qt.cpp" />
     <ClCompile Include="desktop_record.cpp" />
+    <ClCompile Include="desktop_recorder.cpp" />
     <ClCompile Include="encoder.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="screen_recorder.cpp" />
@@ -110,9 +111,11 @@
   <ItemGroup>
     <ClInclude Include="audio_recorder.h" />
     <ClInclude Include="audio_recorder_qt.h" />
+    <ClInclude Include="desktop_recorder.h" />
     <ClInclude Include="encoder.h" />
     <ClInclude Include="screen_recorder.h" />
     <ClInclude Include="screen_recorder_directx.h" />
+    <ClInclude Include="tests\test_desktop_record.h" />
     <ClInclude Include="tests\test_record_audio.h" />
     <ClInclude Include="tests\test_record_screen.h" />
     <ClInclude Include="tests\test_screen_recorder_directx.h" />

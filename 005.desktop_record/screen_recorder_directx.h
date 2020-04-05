@@ -7,7 +7,7 @@ class screen_recorder_directx : public screen_recorder
 public:
 	virtual ~screen_recorder_directx() {}
 
-	virtual bool start(int outFPS = 10, int outWidth = 800, int outHeight = 600) override;
+	virtual bool start(int outFPS = 10, int maxCachedBgra = 10) override;
 	virtual void stop() override;
 
 protected:

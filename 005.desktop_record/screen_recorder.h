@@ -23,9 +23,11 @@ public:
 
 	virtual ~screen_recorder() { stop(); }
 
-	virtual bool start(int outFPS = 10, int outWidth = 800, int outHeight = 600);
+	virtual bool start(int outFPS = 10, int maxCachedBgra = 10);
 	virtual void stop();
 	virtual bgra getBGRA(bool block = false);
+	virtual int getWidth() const { return outWidth_; }
+	virtual int getHeight() const { return outHeight_; }
 
 protected:
 	virtual void run() = 0;
@@ -34,6 +36,7 @@ protected:
 	int outFPS_ = 10;
 	int outWidth_ = 800;
 	int outHeight_ = 600;
+	int maxCachedBgra_ = 10;
 
 	std::atomic_bool running_ = false;
 	std::list<bgra> bgras_ = {};

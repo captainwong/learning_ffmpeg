@@ -234,12 +234,12 @@ bool encoder::addAudioStream(int inSampleRate, int inChannels, ASmpFmt inSmpFmt,
 	return true;
 }
 
-AVPacket* encoder::encodeVideo(char* rgba)
+AVPacket* encoder::encodeVideo(char* bgra)
 {
 	if (!oc || !vs || !sws || !yuv) { return nullptr; }
 
 	const uint8_t* data[AV_NUM_DATA_POINTERS] = { nullptr };
-	data[0] = (const uint8_t*)rgba;
+	data[0] = (const uint8_t*)bgra;
 
 	int linesize[AV_NUM_DATA_POINTERS] = { 0 };
 	linesize[0] = inWidth_ * 4;
@@ -372,5 +372,7 @@ bool encoder::writeTrailer()
 
 bool encoder::isVideoBeforeAudio()
 {
-	return false;
+	if (!oc || !as || !vs) { return false; }
+	int ret = av_compare_ts(vpts, vc->time_base, apts, ac->time_base);
+	return ret <= 0;
 }
