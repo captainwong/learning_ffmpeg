@@ -89,5 +89,8 @@
     <ClInclude Include="tests\test_screen_recorder_directx.h">
       <Filter>tests</Filter>
     </ClInclude>
+    <ClInclude Include="tests\test_record_screen.h">
+      <Filter>tests</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -70,6 +70,9 @@ bool encoder::addVideoStream(int inWidth, int inHeight, VPixFmt inPixFmt, int ou
 {
 	if (!oc) { return false; }
 
+	inWidth_ = inWidth;
+	inHeight_ = inHeight;
+
 	AVCodec* codec = avcodec_find_encoder(AV_CODEC_ID_H264);
 	if (!codec) {
 		fprintf(stderr, "avcodec_find_encoder AV_CODEC_ID_H264 failed\n");
@@ -89,7 +92,7 @@ bool encoder::addVideoStream(int inWidth, int inHeight, VPixFmt inPixFmt, int ou
 	vc->time_base = { 1, outFPS };
 	vc->framerate = { outFPS, 1 };
 
-	vc->gop_size = 100;
+	vc->gop_size = 50;
 	vc->max_b_frames = 0;
 
 	vc->pix_fmt = AV_PIX_FMT_YUV420P;
@@ -122,8 +125,9 @@ bool encoder::addVideoStream(int inWidth, int inHeight, VPixFmt inPixFmt, int ou
 
 	av_dump_format(oc, 0, fileName_.data(), 1);
 
+	auto fmt = (AVPixelFormat)inPixFmt;
 	sws = sws_getCachedContext(sws,
-							   inWidth, inHeight, (AVPixelFormat)inPixFmt,
+							   inWidth, inHeight, fmt,
 							   outWidth, outHeight, AV_PIX_FMT_YUV420P,
 							   SWS_BICUBIC,
 							   nullptr, nullptr, nullptr);
@@ -230,9 +234,49 @@ bool encoder::addAudioStream(int inSampleRate, int inChannels, ASmpFmt inSmpFmt,
 	return true;
 }
 
-AVPacket* encoder::encodeVideo(char* rgb)
+AVPacket* encoder::encodeVideo(char* rgba)
 {
-	return nullptr;
+	if (!oc || !vs || !sws || !yuv) { return nullptr; }
+
+	const uint8_t* data[AV_NUM_DATA_POINTERS] = { nullptr };
+	data[0] = (const uint8_t*)rgba;
+
+	int linesize[AV_NUM_DATA_POINTERS] = { 0 };
+	linesize[0] = inWidth_ * 4;
+
+	int ret = sws_scale(sws, 
+						data, linesize, 0, inHeight_,
+						yuv->data, yuv->linesize);
+	if (ret < 0) {
+		char buf[AV_ERROR_MAX_STRING_SIZE];
+		av_strerror(ret, buf, sizeof(buf) - 1);
+		fprintf(stderr, "sws_scale failed: %s\n", buf);
+		return nullptr;
+	}
+
+	yuv->pts = vpts++;
+
+	ret = avcodec_send_frame(vc, yuv);
+	if (ret != 0) {
+		char buf[AV_ERROR_MAX_STRING_SIZE];
+		av_strerror(ret, buf, sizeof(buf) - 1);
+		fprintf(stderr, "avcodec_send_frame failed: %s\n", buf);
+		return nullptr;
+	}
+
+	AVPacket* pkt = av_packet_alloc();
+	ret = avcodec_receive_packet(vc, pkt);
+	if (ret != 0 || pkt->size <= 0) {
+		av_packet_free(&pkt);
+		char buf[AV_ERROR_MAX_STRING_SIZE];
+		av_strerror(ret, buf, sizeof(buf) - 1);
+		fprintf(stderr, "avcodec_receive_packet failed: %s\n", buf);
+		return nullptr;
+	}
+
+	av_packet_rescale_ts(pkt, vc->time_base, vs->time_base);
+	pkt->stream_index = vs->index;
+	return pkt;
 }
 
 AVPacket* encoder::encodeAudio(char* d)

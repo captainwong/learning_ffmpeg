@@ -63,4 +63,6 @@ protected:
 	encoder() {}
 
 	std::string fileName_ = {};
+	int inWidth_ = 800;
+	int inHeight_ = 600;
 };
