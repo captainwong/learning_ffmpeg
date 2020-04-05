@@ -7,6 +7,7 @@ Documentation/
 *.mp4
 *.mov
 *.pcm
+*.bgra
 
 # Qt-es
 

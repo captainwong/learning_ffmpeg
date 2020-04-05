@@ -17,6 +17,12 @@
     <ClCompile Include="encoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="screen_recorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="screen_recorder_directx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -73,6 +79,15 @@
     </ClInclude>
     <ClInclude Include="encoder.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="screen_recorder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="screen_recorder_directx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\test_screen_recorder_directx.h">
+      <Filter>tests</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

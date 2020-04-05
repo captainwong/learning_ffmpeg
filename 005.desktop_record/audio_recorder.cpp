@@ -16,6 +16,7 @@ audio_recorder* audio_recorder::getInstance(recorder_type type)
 
 bool audio_recorder::start(int sample_rate, int channels, int max_cached_pcms)
 {
+	stop();
 	sample_rate_ = sample_rate;
 	channels_ = channels;
 	max_cached_pcms_ = max_cached_pcms;

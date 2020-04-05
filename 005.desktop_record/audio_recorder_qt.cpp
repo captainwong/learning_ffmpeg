@@ -7,8 +7,10 @@ static QIODevice* gIO = nullptr;
 
 bool audio_recorder_qt::start(int sample_rate, int channels, int max_cached_pcms)
 {
-	stop();
+	__super::start(sample_rate, channels, max_cached_pcms);
+
 	std::lock_guard<std::mutex> lg(mutex_);
+
 	QAudioFormat fmt;
 	fmt.setSampleRate(sample_rate);
 	fmt.setChannelCount(channels);

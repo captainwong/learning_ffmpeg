@@ -91,6 +91,8 @@
     <ClCompile Include="desktop_record.cpp" />
     <ClCompile Include="encoder.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="screen_recorder.cpp" />
+    <ClCompile Include="screen_recorder_directx.cpp" />
     <ClCompile Include="tests\test_audio_recorder_qt.h" />
   </ItemGroup>
   <ItemGroup>
@@ -109,7 +111,10 @@
     <ClInclude Include="audio_recorder.h" />
     <ClInclude Include="audio_recorder_qt.h" />
     <ClInclude Include="encoder.h" />
+    <ClInclude Include="screen_recorder.h" />
+    <ClInclude Include="screen_recorder_directx.h" />
     <ClInclude Include="tests\test_record_audio.h" />
+    <ClInclude Include="tests\test_screen_recorder_directx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
