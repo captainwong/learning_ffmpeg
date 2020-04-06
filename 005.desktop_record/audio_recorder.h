@@ -35,7 +35,7 @@ public:
 	virtual pcm getPCM(bool block = false);
 
 protected:
-	virtual void run();
+	virtual void run() = 0;
 
 
 protected:

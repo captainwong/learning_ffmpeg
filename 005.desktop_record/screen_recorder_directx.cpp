@@ -23,7 +23,10 @@ static bool captureSceen(void* data, int w, int h)
 
 bool screen_recorder_directx::start(int outFPS, int maxCachedBgra)
 {
+	stop();
 	__super::start(outFPS, maxCachedBgra);
+
+	std::lock_guard<std::mutex> lg(mutex_);
 
 	outWidth_ = GetSystemMetrics(SM_CXSCREEN);
 	outHeight_ = GetSystemMetrics(SM_CYSCREEN);

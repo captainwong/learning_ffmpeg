@@ -15,11 +15,11 @@ public:
 	};
 
 	enum class recorder_type {
-		directX,
-		qt,
+		directx,
+		gdigrab,
 	};
 
-	static screen_recorder* getInstance(recorder_type type = recorder_type::directX);
+	static screen_recorder* getInstance(recorder_type type = recorder_type::directx);
 
 	virtual ~screen_recorder() { stop(); }
 

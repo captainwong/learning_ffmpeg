@@ -25,8 +25,9 @@ bool audio_recorder::start(int sample_rate, int channels, int max_cached_pcms)
 
 void audio_recorder::stop()
 {
-	std::lock_guard<std::mutex> lg(mutex_);
+	if (!running_) { return; }
 	running_ = false;
+	std::lock_guard<std::mutex> lg(mutex_);
 	if (thread_.joinable()) {
 		thread_.join();
 	}
@@ -38,14 +39,18 @@ void audio_recorder::stop()
 
 audio_recorder::pcm audio_recorder::getPCM(bool block)
 {
-	while (1) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(0));
+	bool shouldSleep = false;
+	while (running_) {
+		if (shouldSleep) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
 		std::lock_guard<std::mutex> lg(mutex_);
 		if (!pcms_.empty()) {
 			auto p = pcms_.front();
 			pcms_.pop_front();
 			return p;
 		} else if (block) {
+			shouldSleep = true;
 			continue;
 		} else {
 			break;
@@ -54,6 +59,3 @@ audio_recorder::pcm audio_recorder::getPCM(bool block)
 	return pcm();
 }
 
-void audio_recorder::run()
-{
-}

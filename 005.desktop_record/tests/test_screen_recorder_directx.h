@@ -13,7 +13,7 @@ static void test_screen_recorder_directx()
 
 	int pcms = 100;
 
-	auto rec = screen_recorder::getInstance(screen_recorder::recorder_type::directX);
+	auto rec = screen_recorder::getInstance(screen_recorder::recorder_type::directx);
 	if (!rec->start(25)) {
 		fprintf(stderr, "audio_recorder start failed\n");
 		fclose(f);

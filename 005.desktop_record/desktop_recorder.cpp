@@ -4,6 +4,8 @@
 #include "screen_recorder.h"
 
 
+static auto srectype = screen_recorder::recorder_type::gdigrab;
+
 bool desktop_recorder::start(const char* fileName, int fps, int outWidth, int outHeight)
 {
 	stop();
@@ -11,7 +13,7 @@ bool desktop_recorder::start(const char* fileName, int fps, int outWidth, int ou
 	do {
 		std::lock_guard<std::mutex> lg(mutex_);
 
-		auto srec = screen_recorder::getInstance();
+		auto srec = screen_recorder::getInstance(srectype);
 		if (!srec->start(fps)) {
 			break;
 		}
@@ -46,6 +48,7 @@ bool desktop_recorder::start(const char* fileName, int fps, int outWidth, int ou
 
 void desktop_recorder::stop()
 {
+	if (!running_) { return; }
 	running_ = false;
 
 	{
@@ -59,16 +62,17 @@ void desktop_recorder::stop()
 	encoder::getInstance()->close();
 
 	audio_recorder::getInstance()->stop();
-	screen_recorder::getInstance()->stop();
+	screen_recorder::getInstance(srectype)->stop();
 }
 
 void desktop_recorder::run()
 {
 	auto arec = audio_recorder::getInstance();
-	auto vrec = screen_recorder::getInstance();
+	auto vrec = screen_recorder::getInstance(srectype);
 	auto enc = encoder::getInstance();
 
 	while (running_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(0));
 		std::lock_guard<std::mutex> lg(mutex_);
 		auto bgra = vrec->getBGRA();
 		if (bgra.data) {
@@ -77,9 +81,10 @@ void desktop_recorder::run()
 			if (pkt && enc->writeFrame(pkt)) {
 				printf("-");
 			} else {
-				fprintf(stderr, "*");
+				//fprintf(stderr, "*");
 			}
 		}
+
 		auto pcm = arec->getPCM();
 		if (pcm.data) {
 			auto pkt = enc->encodeAudio(pcm.data);
@@ -87,7 +92,7 @@ void desktop_recorder::run()
 			if (pkt && enc->writeFrame(pkt)) {
 				printf(".");
 			} else {
-				fprintf(stderr, "*");
+				//fprintf(stderr, "*");
 			}
 		}
 	}

@@ -26,6 +26,9 @@
     <ClCompile Include="desktop_recorder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="screen_recorder_gdigrab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="tests\test_desktop_record.h">
       <Filter>tests</Filter>
+    </ClInclude>
+    <ClInclude Include="screen_recorder_gdigrab.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

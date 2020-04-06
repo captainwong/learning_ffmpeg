@@ -10,7 +10,7 @@ static void test_record_screen()
 
 	int pcms = 200;
 
-	auto rec = screen_recorder::getInstance(screen_recorder::recorder_type::directX);
+	auto rec = screen_recorder::getInstance(screen_recorder::recorder_type::gdigrab);
 	if (!rec->start(25)) {
 		fprintf(stderr, "screen_recorder start failed\n");
 		return;
@@ -19,7 +19,7 @@ static void test_record_screen()
 	auto enc = encoder::getInstance();
 	auto ret = enc->open(outfile);
 	qDebug() << "open" << ret;
-	ret = enc->addVideoStream(rec->getWidth(), rec->getHeight(), encoder::VPixFmt::AV_PIX_FMT_BGRA, 800, 600);
+	ret = enc->addVideoStream(rec->getWidth(), rec->getHeight(), encoder::VPixFmt::AV_PIX_FMT_BGRA, 1920, 1080);
 	qDebug() << "addVideoStream" << ret;
 	ret = enc->writeHeader();
 	qDebug() << "writeHeader" << ret;

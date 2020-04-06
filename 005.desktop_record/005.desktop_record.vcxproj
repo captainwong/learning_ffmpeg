@@ -94,6 +94,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="screen_recorder.cpp" />
     <ClCompile Include="screen_recorder_directx.cpp" />
+    <ClCompile Include="screen_recorder_gdigrab.cpp" />
     <ClCompile Include="tests\test_audio_recorder_qt.h" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +116,7 @@
     <ClInclude Include="encoder.h" />
     <ClInclude Include="screen_recorder.h" />
     <ClInclude Include="screen_recorder_directx.h" />
+    <ClInclude Include="screen_recorder_gdigrab.h" />
     <ClInclude Include="tests\test_desktop_record.h" />
     <ClInclude Include="tests\test_record_audio.h" />
     <ClInclude Include="tests\test_record_screen.h" />

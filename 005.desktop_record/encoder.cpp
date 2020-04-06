@@ -270,7 +270,7 @@ AVPacket* encoder::encodeVideo(char* bgra)
 		av_packet_free(&pkt);
 		char buf[AV_ERROR_MAX_STRING_SIZE];
 		av_strerror(ret, buf, sizeof(buf) - 1);
-		fprintf(stderr, "avcodec_receive_packet failed: %s\n", buf);
+		fprintf(stderr, "encoder::encodeVideo avcodec_receive_packet failed: %s\n", buf);
 		return nullptr;
 	}
 
@@ -303,6 +303,9 @@ AVPacket* encoder::encodeAudio(char* d)
 	ret = avcodec_receive_packet(ac, pkt);
 	if (ret != 0) {
 		av_packet_free(&pkt);
+		char buf[AV_ERROR_MAX_STRING_SIZE];
+		av_strerror(ret, buf, sizeof(buf) - 1);
+		fprintf(stderr, "encoder::encodeAudio avcodec_receive_packet failed: %s\n", buf);
 		return nullptr;
 	}
 
