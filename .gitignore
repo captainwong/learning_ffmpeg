@@ -4,6 +4,8 @@ Documentation/
 *.7z
 *.exe
 *.ppm
+*.wav
+*.aac
 *.mp4
 *.mov
 *.pcm
