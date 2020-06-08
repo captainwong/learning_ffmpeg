@@ -33,6 +33,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "004.remux", "004.remux\004.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "005.desktop_record", "005.desktop_record\005.desktop_record.vcxproj", "{122C52EC-3141-4D2D-92FE-A3E3822EE568}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "006.record_audio", "006.record_audio\006.record_audio.vcxproj", "{EEE19507-3167-454B-8156-F11D3F2BEC8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -123,6 +125,14 @@ Global
 		{122C52EC-3141-4D2D-92FE-A3E3822EE568}.Release|x64.ActiveCfg = Release|Win32
 		{122C52EC-3141-4D2D-92FE-A3E3822EE568}.Release|x86.ActiveCfg = Release|Win32
 		{122C52EC-3141-4D2D-92FE-A3E3822EE568}.Release|x86.Build.0 = Release|Win32
+		{EEE19507-3167-454B-8156-F11D3F2BEC8E}.Debug|x64.ActiveCfg = Debug|x64
+		{EEE19507-3167-454B-8156-F11D3F2BEC8E}.Debug|x64.Build.0 = Debug|x64
+		{EEE19507-3167-454B-8156-F11D3F2BEC8E}.Debug|x86.ActiveCfg = Debug|Win32
+		{EEE19507-3167-454B-8156-F11D3F2BEC8E}.Debug|x86.Build.0 = Debug|Win32
+		{EEE19507-3167-454B-8156-F11D3F2BEC8E}.Release|x64.ActiveCfg = Release|x64
+		{EEE19507-3167-454B-8156-F11D3F2BEC8E}.Release|x64.Build.0 = Release|x64
+		{EEE19507-3167-454B-8156-F11D3F2BEC8E}.Release|x86.ActiveCfg = Release|Win32
+		{EEE19507-3167-454B-8156-F11D3F2BEC8E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
