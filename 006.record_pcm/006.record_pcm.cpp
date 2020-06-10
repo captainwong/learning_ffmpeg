@@ -40,7 +40,7 @@ void usage()
 		   "               on Linux, its `cat /proc/asound/cards` or `cat /proc/asound/devices`\n"
 		   "output.pcm   The recorded audio file\n"
 		   "Example:\n"
-		   "Windows:     %s dshow \"audio=��˷�(Realtek High Definition Audio)\" output.pcm\n"
+		   "Windows:     %s dshow \"audio=麦克风(Realtek High Definition Audio)\" output.pcm\n"
 		   "MacOS:       %s avfoundation :0 output.pcm\n"
 		   "Linux:       %s alsa hw:0 output.pcm\n"
 		   , exe, exe, exe, exe);
@@ -48,7 +48,7 @@ void usage()
 
 int record_pcm(const char* indevice, const char* device_name, const char* pcm_file)
 {
-	avdevice_register_all();
+	avdevice_register_all(); // 这一句必须有，否则下面返回的 ifmt 是 NULL
 	AVInputFormat* ifmt = av_find_input_format(indevice);
 	if (!ifmt) {
 		fprintf(stderr, "Failed to find input format for input device '%s'\n", indevice);
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 
 #if defined(_WIN32) && defined(_DEBUG)
 	const char* indevice = "dshow";
-	const char* audio_device = "audio=��˷� (Realtek High Definition Audio)";
+	const char* audio_device = "audio=麦克风 (Realtek High Definition Audio)";
 	const char* output_file = "output.pcm";
 #else
 	if (argc < 4) {
