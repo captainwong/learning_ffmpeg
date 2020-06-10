@@ -67,7 +67,9 @@ void usage()
 		   "\taudio_device The dshow audio device name like \"Microphone (3- USB2.0 MIC)\", you can run `ffmpeg -f dshow --list-devices true -i \"dummy\"` to find out\n"
 		   "\toutput.ext   The recorded audio file extention, available exts are:\n"
 		   "\t\tpcm		raw data, no compress\n"
-		   "\t\twav		use wav format, no compress\n", exe);
+		   "\t\twav		use wav format, no compress\n"
+		   "\t\taac		use aac format, compressed\n",
+		   exe);
 }
 
 FILE* open_file_or_die(const char* output_file)
@@ -176,38 +178,50 @@ void close_file(FILE** fp)
 	*fp = nullptr;
 }
 
-
-int main(int argc, char** argv)
+AVCodecContext* open_aac_codec_or_die()
 {
-	exe = argv[0];
-
-#ifdef _DEBUG
-	const char* audio_device = "麦克风 (Realtek High Definition Audio)";
-	//const char* output_file = "output.pcm";
-	const char* output_file = "output.wav";
-#else
-	if (argc < 3) {
-		usage(argv[0]); return 0;
+	AVCodec* codec = avcodec_find_encoder_by_name("libfdk_aac");
+	if (!codec) {
+		fprintf(stderr, "Failed to find encoder by name 'libfdk_aac'\n");
+		exit(1);
 	}
-	const char* audio_device = argv[1];
-	const char* output_file = argv[2];
-#endif
-	std::string audio_device_name = "audio=";
-	audio_device_name += jlib::win32::mbcs_to_utf8(audio_device);
 
+	AVCodecContext* cctx = avcodec_alloc_context3(codec);
+	cctx->sample_fmt = AV_SAMPLE_FMT_S16;
+	cctx->channel_layout = AV_CH_LAYOUT_STEREO;
+	cctx->channels = 2;
+	cctx->sample_rate = 44100;
+	cctx->bit_rate = 0; // AAC_LC: 128K, AAC HE: 64K, AAC HE V2: 32K
+	cctx->profile = FF_PROFILE_AAC_HE_V2;
+
+	int ret = avcodec_open2(cctx, codec, nullptr);
+	if (ret < 0) {
+		char msg[1024];
+		av_strerror(ret, msg, sizeof(msg));
+		fprintf(stderr, "Failed to open codec [libfdk_aac]:%s\n", msg);
+		exit(ret);
+	}
+
+	return cctx;
+}
+
+int record_audio(const char* device_name, const char* output_file)
+{
 	avdevice_register_all();
 
 	AVInputFormat* ifmt = av_find_input_format("dshow");
 	AVFormatContext* ic = NULL;
-	int ret = avformat_open_input(&ic, audio_device_name.data(), ifmt, NULL);
+	int ret = avformat_open_input(&ic, device_name, ifmt, NULL);
 	if (ret < 0) {
 		char msg[1024];
 		av_strerror(ret, msg, sizeof(msg));
-		fprintf(stderr, "Failed to open audio device [%s]:%s\n", audio_device_name.data(), msg);
+		fprintf(stderr, "Failed to open audio device [%s]:%s\n", device_name, msg);
 		return ret;
 	}
 
+	AVCodecContext* cctx = open_aac_codec_or_die();
 	FILE* fp = open_file_or_die(output_file);
+
 	printf("Press Q to stop record\n");
 	bool running = true;
 	std::thread t([&running]() {
@@ -222,9 +236,8 @@ int main(int argc, char** argv)
 		}
 	});
 
-	AVPacket pkt;
+	AVPacket pkt, newpkt;
 	while ((ret = av_read_frame(ic, &pkt)) == 0 && running) {
-		
 		write_data(fp, pkt.data, pkt.size);
 		printf(".");
 		av_packet_unref(&pkt);
@@ -234,5 +247,26 @@ int main(int argc, char** argv)
 	t.join();
 	close_file(&fp);
 	avformat_close_input(&ic);
-	return ret;
+}
+
+
+int main(int argc, char** argv)
+{
+	exe = argv[0];
+
+#ifdef _DEBUG
+	const char* audio_device = "麦克风 (Realtek High Definition Audio)";
+	//const char* output_file = "output.pcm";
+	const char* output_file = "output.wav";
+#else
+	if (argc < 3) {
+		usage(); return 0;
+	}
+	const char* audio_device = argv[1];
+	const char* output_file = argv[2];
+#endif
+
+	std::string audio_device_name = "audio=";
+	audio_device_name += jlib::win32::mbcs_to_utf8(audio_device);	
+	return record_audio(audio_device_name.data(), output_file);
 }
