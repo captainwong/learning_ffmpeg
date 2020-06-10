@@ -10,6 +10,14 @@ prebuild by [zeranoe](https://ffmpeg.zeranoe.com/builds/), 4.2.2, 20200311-36aae
 
 [2.0.12-win32-x86](http://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip)
 
+## Ubuntu 16.04 编译 FFmpeg
+
+```bash
+# 得安装，否则找不到 alsa
+apt install libasound2-dev
+
+```
+
 ## Ubuntu 16.04 开启 `rtmp` 服务
 
 * 已安装 `nginx 1.16.1`
