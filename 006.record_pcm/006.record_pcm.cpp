@@ -56,33 +56,23 @@ void usage()
 }
 
 
-int get_format_from_sample_fmt(const char** fmt,
-							   enum AVSampleFormat sample_fmt)
+int get_format_from_input_fmt(const char** fmt,
+							  AVFormatContext* ic)
 {
-	struct sample_fmt_entry {
-		enum AVSampleFormat sample_fmt; const char* fmt_be, * fmt_le;
-	} sample_fmt_entries[] = {
-		{ AV_SAMPLE_FMT_U8,  "u8",    "u8"    },
-		{ AV_SAMPLE_FMT_S16, "s16be", "s16le" },
-		{ AV_SAMPLE_FMT_S32, "s32be", "s32le" },
-		{ AV_SAMPLE_FMT_FLT, "f32be", "f32le" },
-		{ AV_SAMPLE_FMT_DBL, "f64be", "f64le" },
-	};
-	*fmt = NULL;
-
-	for (int i = 0; i < FF_ARRAY_ELEMS(sample_fmt_entries); i++) {
-		struct sample_fmt_entry* entry = &sample_fmt_entries[i];
-		if (sample_fmt == entry->sample_fmt) {
-			*fmt = AV_NE(entry->fmt_be, entry->fmt_le);
-			return 0;
-		}
+	AVCodecContext* avctx = avcodec_alloc_context3(NULL);
+	if (!avctx)
+		return -1;
+	int ret = avcodec_parameters_to_context(avctx, ic->streams[0]->codecpar);
+	if (ret < 0) {
+		avcodec_free_context(&avctx);
+		return ret;
 	}
 
-	fprintf(stderr,
-			"sample format %d:%s is not supported as output format\n",
-			sample_fmt, av_get_sample_fmt_name(sample_fmt));
-	return -1;
+	*fmt = av_get_sample_fmt_name(avctx->sample_fmt);
+	avcodec_free_context(&avctx);
+	return 0;
 }
+
 
 int record_pcm(const char* indevice, const char* device_name, const char* pcm_file)
 {
@@ -102,6 +92,7 @@ int record_pcm(const char* indevice, const char* device_name, const char* pcm_fi
 	}
 
 	av_dump_format(ic, 0, device_name, 0);
+	//dump_stream_format(ic, 0, 0, 0);
 
 	AVCodecContext* cctx = nullptr;
 	FILE* fp = nullptr;
@@ -122,7 +113,7 @@ int record_pcm(const char* indevice, const char* device_name, const char* pcm_fi
 		int channel_count = ic->streams[0]->codecpar->channels;
 		int sample_rate = ic->streams[0]->codecpar->sample_rate;
 		const char* fmt = nullptr;
-		get_format_from_sample_fmt(&fmt, sample_format);		
+		get_format_from_input_fmt(&fmt, ic);		
 
 		printf("Press Q to stop record\n");
 		bool running = true;
