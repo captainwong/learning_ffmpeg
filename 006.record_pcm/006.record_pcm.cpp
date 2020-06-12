@@ -60,8 +60,9 @@ int get_format_from_input_fmt(const char** fmt,
 							  AVFormatContext* ic)
 {
 	AVCodecContext* avctx = avcodec_alloc_context3(NULL);
-	if (!avctx)
+	if (!avctx) {
 		return -1;
+	}
 	int ret = avcodec_parameters_to_context(avctx, ic->streams[0]->codecpar);
 	if (ret < 0) {
 		char msg[1024];
@@ -70,7 +71,7 @@ int get_format_from_input_fmt(const char** fmt,
 		avcodec_free_context(&avctx);
 		return ret;
 	}
-
+	printf("%d\n", avctx->sample_fmt);
 	*fmt = av_get_sample_fmt_name(avctx->sample_fmt);
 	avcodec_free_context(&avctx);
 	return 0;
