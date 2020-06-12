@@ -79,8 +79,8 @@ int get_format_from_sample_fmt(const char** fmt,
 	}
 
 	fprintf(stderr,
-			"sample format %s is not supported as output format\n",
-			av_get_sample_fmt_name(sample_fmt));
+			"sample format %d:%s is not supported as output format\n",
+			sample_fmt, av_get_sample_fmt_name(sample_fmt));
 	return -1;
 }
 
@@ -126,22 +126,22 @@ int record_pcm(const char* indevice, const char* device_name, const char* pcm_fi
 
 		printf("Press Q to stop record\n");
 		bool running = true;
-		std::thread t([&running]() {
-			while (running) {
-				int c = getchar();
-				if (c == 'Q' || c == 'q') {
-					running = false;
-					break;
-				} else {
-					printf("Press Q to stop record\n");
-				}
+		std::thread t([&ic, &pkt, &running, &fp]() {
+			while ((av_read_frame(ic, &pkt) >= 0) && running) {
+				printf(".");
+				fwrite(pkt.data, 1, pkt.size, fp);
+				av_packet_unref(&pkt);
 			}
 		});
 
-		while ((av_read_frame(ic, &pkt) >= 0) && running) {
-			printf(".");
-			fwrite(pkt.data, 1, pkt.size, fp);
-			av_packet_unref(&pkt);
+		while (1) {
+			int c = getchar();
+			if (c == 'Q' || c == 'q') {
+				running = false;
+				break;
+			} else {
+				printf("Press Q to stop record\n");
+			}
 		}
 
 		running = false;
