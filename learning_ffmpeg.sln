@@ -41,6 +41,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "006.record_pcm", "006.recor
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "006.record_pcm_and_play", "006.record_pcm_and_play\006.record_pcm_and_play.vcxproj", "{E6543F8A-FFFD-45F5-A757-F6819539284D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "006.test_sample_format", "006.test_sample_format\006.test_sample_format.vcxproj", "{5EBBA622-8A6B-49C1-B2A3-FA877B35E266}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -163,6 +165,14 @@ Global
 		{E6543F8A-FFFD-45F5-A757-F6819539284D}.Release|x64.Build.0 = Release|x64
 		{E6543F8A-FFFD-45F5-A757-F6819539284D}.Release|x86.ActiveCfg = Release|Win32
 		{E6543F8A-FFFD-45F5-A757-F6819539284D}.Release|x86.Build.0 = Release|Win32
+		{5EBBA622-8A6B-49C1-B2A3-FA877B35E266}.Debug|x64.ActiveCfg = Debug|x64
+		{5EBBA622-8A6B-49C1-B2A3-FA877B35E266}.Debug|x64.Build.0 = Debug|x64
+		{5EBBA622-8A6B-49C1-B2A3-FA877B35E266}.Debug|x86.ActiveCfg = Debug|Win32
+		{5EBBA622-8A6B-49C1-B2A3-FA877B35E266}.Debug|x86.Build.0 = Debug|Win32
+		{5EBBA622-8A6B-49C1-B2A3-FA877B35E266}.Release|x64.ActiveCfg = Release|x64
+		{5EBBA622-8A6B-49C1-B2A3-FA877B35E266}.Release|x64.Build.0 = Release|x64
+		{5EBBA622-8A6B-49C1-B2A3-FA877B35E266}.Release|x86.ActiveCfg = Release|Win32
+		{5EBBA622-8A6B-49C1-B2A3-FA877B35E266}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
