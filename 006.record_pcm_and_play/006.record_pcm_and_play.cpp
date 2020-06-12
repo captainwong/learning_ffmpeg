@@ -1,10 +1,9 @@
-ï»¿/**
-2020å¹´6æœˆ12æ—¥
+/**
+2020Äê6ÔÂ12ÈÕ
 Jack
-é€šè¿‡å„ç³»ç»Ÿçš„éŸ³é¢‘è¾“å…¥è®¾å¤‡é‡‡é›†éŸ³é¢‘å¹¶å†™å…¥pcmæ–‡ä»¶
+Í¨¹ı¸÷ÏµÍ³µÄÒôÆµÊäÈëÉè±¸²É¼¯ÒôÆµ²¢Ğ´ÈëpcmÎÄ¼ş£¬Í¬Ê±Í¨¹ıSDL2²¥·Å²É¼¯µ½µÄÒôÆµ
 
 */
-
 
 #include <stdio.h>
 #include <thread>
@@ -49,18 +48,18 @@ void usage()
 		   "               on Linux, its `cat /proc/asound/cards` or `cat /proc/asound/devices`\n"
 		   "output.pcm   The recorded audio file\n"
 		   "Example:\n"
-		   "Windows:     %s dshow \"audio=éº¦å…‹é£(Realtek High Definition Audio)\" output.pcm\n"
+		   "Windows:     %s dshow \"audio=Âó¿Ë·ç(Realtek High Definition Audio)\" output.pcm\n"
 		   "MacOS:       %s avfoundation :0 output.pcm\n"
 		   "Linux:       %s alsa hw:0 output.pcm\n"
 		   , exe, exe, exe, exe);
 }
 
 /**
-* 
+*
 */
-int open_codec_context(AVFormatContext* ic, 
-					   AVMediaType type, 
-					   int& stream_idx, 
+int open_codec_context(AVFormatContext* ic,
+					   AVMediaType type,
+					   int& stream_idx,
 					   AVCodecContext*& codec_ctx)
 {
 	int stream_index = -1;
@@ -72,7 +71,7 @@ int open_codec_context(AVFormatContext* ic,
 	}
 
 	if (stream_index == -1) {
-		fprintf(stderr, "Failed to find stream type %s\n", 
+		fprintf(stderr, "Failed to find stream type %s\n",
 				av_get_media_type_string(type));
 		return -1;
 	}
@@ -80,15 +79,15 @@ int open_codec_context(AVFormatContext* ic,
 	AVStream* stream = ic->streams[stream_index];
 	AVCodec* codec = avcodec_find_decoder(stream->codecpar->codec_id);
 	if (!codec) {
-		fprintf(stderr, "Failed to find decoder for %s, codec_id=%08x\n", 
-				av_get_media_type_string(type), 
+		fprintf(stderr, "Failed to find decoder for %s, codec_id=%08x\n",
+				av_get_media_type_string(type),
 				stream->codecpar->codec_id);
 		return -1;
 	}
 
 	codec_ctx = avcodec_alloc_context3(codec);
 	if (!codec_ctx) {
-		fprintf(stderr, "Failed to allocate codec context for %s\n", 
+		fprintf(stderr, "Failed to allocate codec context for %s\n",
 				av_get_media_type_string(type));
 		return -1;
 	}
@@ -116,7 +115,7 @@ int open_codec_context(AVFormatContext* ic,
 
 int record_pcm(const char* indevice, const char* device_name, const char* pcm_file)
 {
-	avdevice_register_all(); // è¿™ä¸€å¥å¿…é¡»æœ‰ï¼Œå¦åˆ™ä¸‹é¢è¿”å›çš„ ifmt æ˜¯ NULL
+	avdevice_register_all(); // ÕâÒ»¾ä±ØĞëÓĞ£¬·ñÔòÏÂÃæ·µ»ØµÄ ifmt ÊÇ NULL
 	AVInputFormat* ifmt = av_find_input_format(indevice);
 	if (!ifmt) {
 		fprintf(stderr, "Failed to find input format for input device '%s'\n", indevice);
@@ -180,10 +179,10 @@ int record_pcm(const char* indevice, const char* device_name, const char* pcm_fi
 					} else {
 						printf("got frame\n");
 						int frame_size = av_get_bytes_per_sample(cctx->sample_fmt);
-						
+
 					}
 				}
-				
+
 			}
 		}
 
@@ -211,7 +210,7 @@ int main(int argc, char** argv)
 
 #if defined(_WIN32) && defined(_DEBUG)
 	const char* indevice = "dshow";
-	const char* audio_device = "audio=éº¦å…‹é£ (Realtek High Definition Audio)";
+	const char* audio_device = "audio=Âó¿Ë·ç (Realtek High Definition Audio)";
 	const char* output_file = "output.pcm";
 #else
 	if (argc < 4) {
@@ -222,7 +221,7 @@ int main(int argc, char** argv)
 	const char* output_file = argv[3];
 #endif
 
-	std::string audio_device_name = audio_device;	
+	std::string audio_device_name = audio_device;
 #ifdef _WIN32
 	audio_device_name = jlib::win32::mbcs_to_utf8(audio_device);
 #endif

@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{765bd807-71e4-4db9-9bbd-19da930962c5}</ProjectGuid>
-    <RootNamespace>My006recordpcm</RootNamespace>
+    <ProjectGuid>{e6543f8a-fffd-45f5-a757-f6819539284d}</ProjectGuid>
+    <RootNamespace>My006recordpcmandplay</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -143,7 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="006.record_pcm.cpp" />
+    <ClCompile Include="006.record_pcm_and_play.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
