@@ -135,7 +135,7 @@ int record_pcm(const char* indevice, const char* device_name, const char* pcm_fi
 		});
 
 		while (1) {
-			int c = getchar();
+			int c = getc(stdin);
 			if (c == 'Q' || c == 'q') {
 				running = false;
 				break;
