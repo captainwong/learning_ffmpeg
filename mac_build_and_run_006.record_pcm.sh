@@ -2,8 +2,10 @@
 
 mkdir -p build/mac
 cd build/mac
-build=`clang++ -std=c++11 -o 006.record_pcm ../../006.record_pcm/006.record_pcm.cpp -I/usr/local/ffmpeg/include -L/usr/local/ffmpeg/lib -lavcodec -lavdevice -lavformat -lavutil`
+flags=`pkg-config --libs --cflags libavcodec libavdevice libavformat libavutil`
+build=`clang++ -std=c++11 -o 006.record_pcm ../../006.record_pcm/006.record_pcm.cpp ${flags}`
 run=`./006.record_pcm avfoundation :0 006.out.pcm`
 
-${build} && ${run}
+clang++ -std=c++11 -o 006.record_pcm ../../006.record_pcm/006.record_pcm.cpp ${flags} && ./006.record_pcm avfoundation :0 006.out.pcm
+#${build} && ${run}
 
