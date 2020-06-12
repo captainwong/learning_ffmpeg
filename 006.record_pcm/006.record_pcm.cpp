@@ -405,8 +405,11 @@ int record_pcm(const char* indevice, const char* device_name, const char* pcm_fi
 		return ret;
 	}
 
-	//av_dump_format(ic, 0, device_name, 0);
+	av_dump_format(ic, 0, device_name, 0);
+	printf("============================\n");
 	dump_stream_format(ic, 0, 0, 0);
+
+	return 0;
 
 	AVCodecContext* cctx = nullptr;
 	FILE* fp = nullptr;
