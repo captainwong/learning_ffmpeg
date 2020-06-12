@@ -55,64 +55,34 @@ void usage()
 		   , exe, exe, exe, exe);
 }
 
-/**
-* 
-*/
-int open_codec_context(AVFormatContext* ic, 
-					   AVMediaType type, 
-					   int& stream_idx, 
-					   AVCodecContext*& codec_ctx)
+
+int get_format_from_sample_fmt(const char** fmt,
+							   enum AVSampleFormat sample_fmt)
 {
-	int stream_index = -1;
-	for (unsigned int i = 0; i < ic->nb_streams; i++) {
-		if (ic->streams[i]->codecpar->codec_type == type) {
-			stream_index = (int)i;
-			break;
+	struct sample_fmt_entry {
+		enum AVSampleFormat sample_fmt; const char* fmt_be, * fmt_le;
+	} sample_fmt_entries[] = {
+		{ AV_SAMPLE_FMT_U8,  "u8",    "u8"    },
+		{ AV_SAMPLE_FMT_S16, "s16be", "s16le" },
+		{ AV_SAMPLE_FMT_S32, "s32be", "s32le" },
+		{ AV_SAMPLE_FMT_FLT, "f32be", "f32le" },
+		{ AV_SAMPLE_FMT_DBL, "f64be", "f64le" },
+	};
+	*fmt = NULL;
+
+	for (int i = 0; i < FF_ARRAY_ELEMS(sample_fmt_entries); i++) {
+		struct sample_fmt_entry* entry = &sample_fmt_entries[i];
+		if (sample_fmt == entry->sample_fmt) {
+			*fmt = AV_NE(entry->fmt_be, entry->fmt_le);
+			return 0;
 		}
 	}
 
-	if (stream_index == -1) {
-		fprintf(stderr, "Failed to find stream type %s\n", 
-				av_get_media_type_string(type));
-		return -1;
-	}
-
-	AVStream* stream = ic->streams[stream_index];
-	AVCodec* codec = avcodec_find_decoder(stream->codecpar->codec_id);
-	if (!codec) {
-		fprintf(stderr, "Failed to find decoder for %s, codec_id=%08x\n", 
-				av_get_media_type_string(type), 
-				stream->codecpar->codec_id);
-		return -1;
-	}
-
-	codec_ctx = avcodec_alloc_context3(codec);
-	if (!codec_ctx) {
-		fprintf(stderr, "Failed to allocate codec context for %s\n", 
-				av_get_media_type_string(type));
-		return -1;
-	}
-
-	char msg[1024];
-	int ret = avcodec_parameters_to_context(codec_ctx, stream->codecpar);
-	if (ret < 0) {
-		av_strerror(ret, msg, sizeof(msg));
-		fprintf(stderr, "Failed to copy %s codec parameters to decoder context:%s\n",
-				av_get_media_type_string(type),
-				msg);
-		return ret;
-	}
-
-	if ((ret = avcodec_open2(codec_ctx, codec, nullptr)) < 0) {
-		fprintf(stderr, "Failed to open codec %s\n", av_get_media_type_string(type));;
-		return ret;
-	}
-
-	stream_idx = stream_index;
-	return 0;
+	fprintf(stderr,
+			"sample format %s is not supported as output format\n",
+			av_get_sample_fmt_name(sample_fmt));
+	return -1;
 }
-
-
 
 int record_pcm(const char* indevice, const char* device_name, const char* pcm_file)
 {
@@ -135,56 +105,52 @@ int record_pcm(const char* indevice, const char* device_name, const char* pcm_fi
 
 	AVCodecContext* cctx = nullptr;
 	FILE* fp = nullptr;
-	AVFrame* frame = nullptr;
 	AVPacket pkt;
 
 	av_init_packet(&pkt);
 	pkt.data = nullptr; pkt.size = 0;
 
 	do {
-		int stream_index = -1;
-		if ((ret = open_codec_context(ic, AVMEDIA_TYPE_AUDIO, stream_index, cctx)) < 0) {
-			break;
-		}
-
 		if (!(fp = fopen(pcm_file, "wb"))) {
 			ret = errno;
 			fprintf(stderr, "Failed to open file '%s':[%d]%s\n", pcm_file, ret, strerror(ret));
 			break;
 		};
 
-		if (!(frame = av_frame_alloc())) {
-			fprintf(stderr, "Failed to allocate AVFrame\n");
-			ret = -1;
-			break;
+		assert(ic->nb_streams == 1);
+		AVSampleFormat sample_format = (AVSampleFormat)ic->streams[0]->codecpar->format;
+		int channel_count = ic->streams[0]->codecpar->channels;
+		int sample_rate = ic->streams[0]->codecpar->sample_rate;
+		const char* fmt = nullptr;
+		get_format_from_sample_fmt(&fmt, sample_format);		
+
+		printf("Press Q to stop record\n");
+		bool running = true;
+		std::thread t([&running]() {
+			while (running) {
+				int c = getchar();
+				if (c == 'Q' || c == 'q') {
+					running = false;
+					break;
+				} else {
+					printf("Press Q to stop record\n");
+				}
+			}
+		});
+
+		while ((av_read_frame(ic, &pkt) >= 0) && running) {
+			printf(".");
+			fwrite(pkt.data, 1, pkt.size, fp);
+			av_packet_unref(&pkt);
 		}
 
-		while ((av_read_frame(ic, &pkt) >= 0)) {
-			printf("got packet\n");
-			ret = avcodec_send_packet(cctx, &pkt);
-			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+		running = false;
+		t.join();
 
-			} else if (ret < 0) {
-				av_strerror(ret, msg, sizeof(msg));
-				fprintf(stderr, "Failed on submitting packet to decoder:%s\n", msg);
-				return ret;
-			} else {
-				while (ret >= 0) {
-					ret = avcodec_receive_frame(cctx, frame);
-					if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
-						break;
-					} else if (ret < 0) {
-						av_strerror(ret, msg, sizeof(msg));
-						fprintf(stderr, "Failed on decoding:%s\n", msg);
-						return ret;
-					} else {
-						printf("got frame\n");
-						int frame_size = av_get_bytes_per_sample(cctx->sample_fmt);
-						
-					}
-				}
-				
-			}
+		if (fmt) {
+			printf("Record stopped, play the output audio file with the command:\n"
+				   "ffplay -f %s -ac %d -ar %d %s\n",
+				   fmt, channel_count, sample_rate, pcm_file);
 		}
 
 	} while (0);
