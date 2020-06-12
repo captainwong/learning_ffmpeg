@@ -1,13 +1,10 @@
 
 
 #include <stdio.h>
-#include <thread>
 #include <string>
 #ifdef _WIN32
 #include <jlib/win32/UnicodeTool.h>
 #endif
-#include <stdint.h>
-#include <assert.h>
 
 #pragma warning(disable:4819)
 #pragma warning(disable:4996)
