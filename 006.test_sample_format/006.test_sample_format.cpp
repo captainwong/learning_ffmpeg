@@ -36,7 +36,7 @@ int main()
 	const char* device = "dshow";
 	std::string audio_ = jlib::win32::mbcs_to_utf8("audio=Âó¿Ë·ç (Realtek High Definition Audio)");
 	const char* audio = audio_.data();
-#elif defined(__DARWIN__)
+#elif defined(__APPLE__)
 	const char* device = "avfoundation";
 	const char* audio = ":0";
 #else
