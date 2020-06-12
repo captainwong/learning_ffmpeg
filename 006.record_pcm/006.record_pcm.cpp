@@ -64,6 +64,9 @@ int get_format_from_input_fmt(const char** fmt,
 		return -1;
 	int ret = avcodec_parameters_to_context(avctx, ic->streams[0]->codecpar);
 	if (ret < 0) {
+		char msg[1024];
+		av_strerror(ret, msg, sizeof(msg));
+		fprintf(stderr, "Failed to avcodec_parameters_to_context:%s\n", msg);
 		avcodec_free_context(&avctx);
 		return ret;
 	}
