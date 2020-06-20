@@ -2,36 +2,10 @@
 #ifndef FFMPEG_CONFIG_H
 #define FFMPEG_CONFIG_H
 
+#pragma once
+
+#pragma warning(disable:4819)
 #pragma warning(disable:4996)
-
-#include <string>
-
-extern "C" {
-#include <libavutil/error.h>
-#include <libavutil/timestamp.h>
-}
-
-static std::string cppav_strerror(int errnum) {
-	char msg[64] = { 0 };
-	av_strerror(errnum, msg, 64);
-	return msg;
-}
-#define cppav_err2str(errnum) cppav_strerror(errnum).data()
-
-static std::string cppav_ts2str_helper(int64_t t) {
-	char msg[32] = { 0 };
-	av_ts_make_string(msg, t);
-	return std::string(msg);
-}
-#define cppav_ts2str(t) cppav_ts2str_helper(t).data()
-
-static std::string cpp_av_ts_make_time_string(int64_t ts, AVRational* tb) {
-	char msg[32] = { 0 };
-	av_ts_make_time_string(msg, ts, tb);
-	return std::string(msg);
-}
-#define cppav_ts2timestr(ts, tb) cpp_av_ts_make_time_string(ts, tb).data()
-
 
 #define FFMPEG_CONFIGURATION "--toolchain=msvc --enable-asm --enable-yasm --arch=i386 --enable-shared --disable-static --prefix=../win32-shared --extra-cflags=-MDd --extra-ldflags='/NODEFAULTLIB:libcmt' --enable-debug"
 #define FFMPEG_LICENSE "LGPL version 2.1 or later"
