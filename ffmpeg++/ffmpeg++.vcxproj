@@ -89,6 +89,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(FFMPEG)/include;$(DEVLIBS)/jlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,11 +144,15 @@
   <ItemGroup>
     <ClCompile Include="cmdutils.cpp" />
     <ClCompile Include="ffmpeg.cpp" />
+    <ClCompile Include="ffmpeg_hw.cpp" />
+    <ClCompile Include="ffmpeg_opt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cmdutils.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="ffmpeg.h" />
+    <ClInclude Include="ffmpeg_hw.h" />
+    <ClInclude Include="ffmpeg_opt.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

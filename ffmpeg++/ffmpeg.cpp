@@ -332,6 +332,7 @@ int main(int argc, char** argv)
     register_exit(ffmpeg_cleanup);
     setvbuf(stderr, NULL, _IONBF, 0); /* win32 runtime needs this */
     av_log_set_flags(AV_LOG_SKIP_REPEATED);
+    parse_loglevel(argc, argv, options);
     
     exit_program(g_ffmpeg_local_resource.main_return_code);
     return g_ffmpeg_local_resource.main_return_code;
