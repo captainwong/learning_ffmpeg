@@ -282,7 +282,7 @@ static int write_option(void* optctx, const OptionDef* po, const char* opt,
         exit_program(0);
 
     return 0;
-}
+} 
 
 int parse_option(void* optctx, const char* opt, const char* arg,
                  const OptionDef* options)

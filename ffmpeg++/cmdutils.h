@@ -10,6 +10,7 @@ extern "C" {
 }
 
 #include "ffmpeg_opt.h"
+#include "structs.h"
 
 extern int hide_banner;
 
@@ -96,6 +97,40 @@ int opt_codec_debug(void* optctx, const char* opt, const char* arg);
 int opt_timelimit(void* optctx, const char* opt, const char* arg);
 
 /**
+ * Parse an options group and write results into optctx.
+ *
+ * @param optctx an app-specific options context. NULL for global options group
+ */
+int parse_optgroup(void* optctx, OptionGroup* g);
+
+/**
+ * Split the commandline into an intermediate form convenient for further
+ * processing.
+ *
+ * The commandline is assumed to be composed of options which either belong to a
+ * group (those with OPT_SPEC, OPT_OFFSET or OPT_PERFILE) or are global
+ * (everything else).
+ *
+ * A group (defined by an OptionGroupDef struct) is a sequence of options
+ * terminated by either a group separator option (e.g. -i) or a parameter that
+ * is not an option (doesn't start with -). A group without a separator option
+ * must always be first in the supplied groups list.
+ *
+ * All options within the same group are stored in one OptionGroup struct in an
+ * OptionGroupList, all groups with the same group definition are stored in one
+ * OptionGroupList in OptionParseContext.groups. The order of group lists is the
+ * same as the order of group definitions.
+ */
+int split_commandline(OptionParseContext* octx, int argc, char* argv[],
+                      const OptionDef* options,
+                      const OptionGroupDef* groups, int nb_groups);
+
+/**
+ * Free all allocated memory in an OptionParseContext.
+ */
+void uninit_parse_context(OptionParseContext* octx);
+
+/**
  * Parse a string and return its corresponding value as a double.
  * Exit from the application if the string cannot be correctly
  * parsed or the corresponding value is invalid.
@@ -160,7 +195,7 @@ void* grow_array(void* array, int elem_size, int* size, int new_size);
 
 #define GET_CH_LAYOUT_NAME(ch_layout)\
     char name[16];\
-    snprintf(name, sizeof(name), "0x%"PRIx64, ch_layout);
+    snprintf(name, sizeof(name), "0x%" PRIx64, ch_layout);
 
 #define GET_CH_LAYOUT_DESC(ch_layout)\
     char name[128];\
@@ -168,6 +203,86 @@ void* grow_array(void* array, int elem_size, int* size, int new_size);
 
 
 
+double get_rotation(AVStream* st);
+
+/**
+ * Check if the given stream matches a stream specifier.
+ *
+ * @param s  Corresponding format context.
+ * @param st Stream from s to be checked.
+ * @param spec A stream specifier of the [v|a|s|d]:[\<stream index\>] form.
+ *
+ * @return 1 if the stream matches, 0 if it doesn't, <0 on error
+ */
+int check_stream_specifier(AVFormatContext* s, AVStream* st, const char* spec);
+
+/**
+ * Filter out options for given codec.
+ *
+ * Create a new options dictionary containing only the options from
+ * opts which apply to the codec with ID codec_id.
+ *
+ * @param opts     dictionary to place options in
+ * @param codec_id ID of the codec that should be filtered for
+ * @param s Corresponding format context.
+ * @param st A stream from s for which the options should be filtered.
+ * @param codec The particular codec for which the options should be filtered.
+ *              If null, the default one is looked up according to the codec id.
+ * @return a pointer to the created dictionary
+ */
+AVDictionary* filter_codec_opts(AVDictionary* opts, enum AVCodecID codec_id,
+                                AVFormatContext* s, AVStream* st, AVCodec* codec);
+
+/**
+ * Setup AVCodecContext options for avformat_find_stream_info().
+ *
+ * Create an array of dictionaries, one dictionary for each stream
+ * contained in s.
+ * Each dictionary will contain the options from codec_opts which can
+ * be applied to the corresponding stream codec context.
+ *
+ * @return pointer to the created array of dictionaries, NULL if it
+ * cannot be created
+ */
+AVDictionary** setup_find_stream_info_opts(AVFormatContext* s,
+                                           AVDictionary* codec_opts);
+
+/**
+ * Print an error message to stderr, indicating filename and a human
+ * readable description of the error code err.
+ *
+ * If strerror_r() is not available the use of this function in a
+ * multithreaded application may be unsafe.
+ *
+ * @see av_strerror()
+ */
+void print_error(const char* filename, int err);
 
 
+/**
+ * Get a file corresponding to a preset file.
+ *
+ * If is_path is non-zero, look for the file in the path preset_name.
+ * Otherwise search for a file named arg.ffpreset in the directories
+ * $FFMPEG_DATADIR (if set), $HOME/.ffmpeg, and in the datadir defined
+ * at configuration time or in a "ffpresets" folder along the executable
+ * on win32, in that order. If no such file is found and
+ * codec_name is defined, then search for a file named
+ * codec_name-preset_name.avpreset in the above-mentioned directories.
+ *
+ * @param filename buffer where the name of the found filename is written
+ * @param filename_size size in bytes of the filename buffer
+ * @param preset_name name of the preset to search
+ * @param is_path tell if preset_name is a filename path
+ * @param codec_name name of the codec for which to look for the
+ * preset, may be NULL
+ */
+FILE* get_preset_file(char* filename, size_t filename_size,
+                      const char* preset_name, int is_path, const char* codec_name);
+
+/**
+ * Return a positive value if a line read from standard input
+ * starts with [yY], otherwise return 0.
+ */
+int read_yesno(void);
 

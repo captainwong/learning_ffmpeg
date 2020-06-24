@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="cmdutils.cpp" />
     <ClCompile Include="ffmpeg.cpp" />
+    <ClCompile Include="ffmpeg_filter.cpp" />
     <ClCompile Include="ffmpeg_hw.cpp" />
     <ClCompile Include="ffmpeg_opt.cpp" />
   </ItemGroup>
@@ -153,6 +154,7 @@
     <ClInclude Include="ffmpeg.h" />
     <ClInclude Include="ffmpeg_hw.h" />
     <ClInclude Include="ffmpeg_opt.h" />
+    <ClInclude Include="structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
