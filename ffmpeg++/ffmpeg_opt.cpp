@@ -47,7 +47,6 @@ const HWAccel hwaccels[] = {
 };
 
 
-
 static int intra_only = 0;
 static int file_overwrite = 0;
 static int no_file_overwrite = 0;

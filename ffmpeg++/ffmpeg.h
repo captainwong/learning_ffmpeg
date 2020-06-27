@@ -102,6 +102,8 @@ int configure_output_filter(FilterGraph* fg, OutputFilter* ofilter, AVFilterInOu
 void check_filter_outputs(void);
 int ist_in_filtergraph(FilterGraph* fg, InputStream* ist);
 int filtergraph_is_simple(FilterGraph* fg);
+int ifilter_parameters_from_frame(InputFilter* ifilter, const AVFrame* frame);
 int init_simple_filtergraph(InputStream* ist, OutputStream* ost);
 int init_complex_filtergraph(FilterGraph* fg);
 
+int ffmpeg_parse_options(int argc, char** argv);

@@ -7,7 +7,7 @@ extern "C" {
 #include <libavutil/avassert.h>
 }
 
-
+extern const HWAccel hwaccels[];
 extern const OptionDef options[];
 
 inline const OptionDef* find_option(const OptionDef* po, const char* name)
