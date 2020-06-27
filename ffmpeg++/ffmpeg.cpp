@@ -23,6 +23,10 @@ extern "C" {
 #include <libavutil/display.h>
 }
 
+#ifdef _WIN32
+#include <jlib/win32/UnicodeTool.h>
+#endif
+
 #if HAVE_IO_H
 #include <io.h>
 #endif
@@ -4803,7 +4807,26 @@ static int check_recording_time(OutputStream* ost)
     return 1;
 }
 
+#define DEBUG_MY_CMD_LINE 0
+
+#if defined(_DEBUG) && DEBUG_MY_CMD_LINE
+int the_main(int argc, char** argv);
+int main()
+{
+    const char* audio_device = "audio=Âó¿Ë·ç (Realtek High Definition Audio)";
+    std::string audio_device_name = audio_device;
+#ifdef _WIN32
+    audio_device_name = jlib::win32::mbcs_to_utf8(audio_device);
+#endif
+    const char* args[] = {
+        "ffmpeg", "-loglevel", "trace", "-f", "dshow", "-i", audio_device,
+    };
+    return the_main(_countof(args), const_cast<char**>(args));
+}
+int the_main(int argc, char** argv)
+#else
 int main(int argc, char** argv)
+#endif
 {
     //setlocale(LC_ALL, "");
     init_dynload();

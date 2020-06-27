@@ -485,7 +485,7 @@ int main(int argc, char** argv)
 
 #if defined(_WIN32) && defined(_DEBUG)
 	const char* indevice = "dshow";
-	const char* audio_device = "audio=麦克风 (Realtek High Definition Audio)";
+	const char* audio_device = "audio=\"麦克风 (Realtek High Definition Audio)\"";
 	const char* output_file = "output.pcm";
 #else
 	if (argc < 4) {
