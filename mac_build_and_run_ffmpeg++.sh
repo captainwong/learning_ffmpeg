@@ -8,6 +8,6 @@ flags=`pkg-config --libs --cflags libavcodec libavdevice libavfilter libavformat
 rm -f ffmpeg++
 folder='../../ffmpeg++'
 sources="${folder}/ffmpeg.cpp ${folder}/cmdutils.cpp ${folder}/ffmpeg_filter.cpp ${folder}/ffmpeg_hw.cpp ${folder}/ffmpeg_opt.cpp"
-clang++ -std=c++11 -o ffmpeg++ ${sources} -lpthread ${flags} && ./ffmpeg++
+clang++ -std=c++11 -o ffmpeg++ ${sources} -I${folder} -lpthread ${flags} && ./ffmpeg++
 #${build} && ${run}
 
