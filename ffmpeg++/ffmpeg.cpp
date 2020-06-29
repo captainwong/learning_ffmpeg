@@ -480,7 +480,7 @@ static BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
 void term_init(void)
 {
 #if HAVE_TERMIOS_H
-    if (!run_as_daemon && stdin_interaction) {
+    if (!g_ffmpeg_local_resource.run_as_daemon && g_ffmpeg_option.stdin_interaction) {
         struct termios tty;
         if (tcgetattr(0, &tty) == 0) {
             g_ffmpeg_local_resource.oldtty = tty;
