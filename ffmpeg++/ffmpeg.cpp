@@ -88,6 +88,13 @@ struct FFmpegLocalResource {
     int want_sdp = 1;
 
     BenchmarkTimeStamps current_time;
+
+
+#if HAVE_TERMIOS_H
+    /* init terminal so that we can grab keys */
+    termios oldtty;
+    int restore_tty;
+#endif
 };
 
 FFmpegResource g_ffmpeg_resource = {};
@@ -413,8 +420,8 @@ static void sub2video_flush(InputStream* ist)
 static void term_exit_sigsafe(void)
 {
 #if HAVE_TERMIOS_H
-    if (restore_tty)
-        tcsetattr(0, TCSANOW, &oldtty);
+    if (g_ffmpeg_local_resource.restore_tty)
+        tcsetattr(0, TCSANOW, &g_ffmpeg_resource.oldtty);
 #endif
 }
 
@@ -476,8 +483,8 @@ void term_init(void)
     if (!run_as_daemon && stdin_interaction) {
         struct termios tty;
         if (tcgetattr(0, &tty) == 0) {
-            oldtty = tty;
-            restore_tty = 1;
+            g_ffmpeg_resource.oldtty = tty;
+            g_ffmpeg_local_resource.restore_tty = 1;
 
             tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
                              | INLCR | IGNCR | ICRNL | IXON);
