@@ -12,7 +12,7 @@
 #define CONFIG_THIS_YEAR 2019
 #define FFMPEG_DATADIR "../win32-shared/share/ffmpeg"
 #define AVCONV_DATADIR "../win32-shared/share/ffmpeg"
-#define CC_IDENT "ÓÃÓÚ x86 µÄ Microsoft (R) C/C++ ÓÅ»¯±àÒëÆ÷ 19.26.28806 °æ"
+#define CC_IDENT "ç”¨äºŽ x86 çš„ Microsoft (R) C/C++ ä¼˜åŒ–ç¼–è¯‘å™¨ 19.26.28806 ç‰ˆ"
 #define av_restrict __restrict
 #define EXTERN_PREFIX "_"
 #define EXTERN_ASM _
