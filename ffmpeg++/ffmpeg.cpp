@@ -421,7 +421,7 @@ static void term_exit_sigsafe(void)
 {
 #if HAVE_TERMIOS_H
     if (g_ffmpeg_local_resource.restore_tty)
-        tcsetattr(0, TCSANOW, &g_ffmpeg_resource.oldtty);
+        tcsetattr(0, TCSANOW, &g_ffmpeg_local_resource.oldtty);
 #endif
 }
 
@@ -483,7 +483,7 @@ void term_init(void)
     if (!run_as_daemon && stdin_interaction) {
         struct termios tty;
         if (tcgetattr(0, &tty) == 0) {
-            g_ffmpeg_resource.oldtty = tty;
+            g_ffmpeg_local_resource.oldtty = tty;
             g_ffmpeg_local_resource.restore_tty = 1;
 
             tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
