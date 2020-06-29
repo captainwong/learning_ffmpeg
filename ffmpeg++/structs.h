@@ -484,6 +484,7 @@ typedef struct OptionDef {
 #define OPT_DOUBLE 0x20000
 #define OPT_INPUT  0x40000
 #define OPT_OUTPUT 0x80000
+    typedef int (*func_arg_type)(void*, const char*, const char*);
     union {
         void* dst_ptr;
         int (*func_arg)(void*, const char*, const char*);
