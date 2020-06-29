@@ -1,6 +1,12 @@
 #pragma once
 
-#include "config.h"
+#ifdef _WIN32
+#include "config-win.h"
+#elif defined(__APPLE__)
+#include "config-mac.h"
+#else
+#error todo
+#endif
 
 extern "C" {
 #include <libavcodec/avcodec.h>

@@ -10,8 +10,6 @@
    Studio) will not omit unused inline functions and create undefined
    references to libraries that are not being built. */
 
-#include "config.h"
-
 extern "C" {
     //#include "compat/va_copy.h"
 #include "libavformat/avformat.h"

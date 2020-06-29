@@ -38,9 +38,6 @@
     <ClInclude Include="ffmpeg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ffmpeg_opt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -48,6 +45,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="structs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="config-win.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="config-mac.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

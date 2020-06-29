@@ -6,6 +6,7 @@ extern "C" {
 #include <libavfilter/buffersink.h>
 #include <libavfilter/buffersrc.h>
 #include <libavutil/bprint.h>
+#include <libswscale/swscale.h>
 }
 
 /*

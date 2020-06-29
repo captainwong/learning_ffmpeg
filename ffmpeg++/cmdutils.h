@@ -1,16 +1,7 @@
 #pragma once
 
-#include "config.h"
-
-extern "C" {
-#include "libavcodec/avcodec.h"
-#include "libavfilter/avfilter.h"
-#include "libavformat/avformat.h"
-#include "libswscale/swscale.h"
-}
-
-#include "ffmpeg_opt.h"
 #include "structs.h"
+#include "ffmpeg_opt.h"
 
 extern int hide_banner;
 

@@ -1,3 +1,4 @@
+#include "structs.h"
 #include "ffmpeg_opt.h"
 #include "ffmpeg.h"
 #include "cmdutils.h"
@@ -7,6 +8,7 @@
 extern "C" {
 #include <libavutil/parseutils.h>
 #include <libavutil/pixdesc.h>
+#include <libswscale/swscale.h>
 }
 
 #define DEFAULT_PASS_LOGFILENAME_PREFIX "ffmpeg2pass"
