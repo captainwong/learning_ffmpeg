@@ -703,7 +703,12 @@ static void print_program_info(int flags, int level)
         av_log(NULL, level, " Copyright (c) %d-%d the FFmpeg developers",
                program_birth_year, CONFIG_THIS_YEAR);
     av_log(NULL, level, "\n");
+
+#ifdef _WIN32
     av_log(NULL, level, "%sbuilt with %s\n", indent, jlib::win32::mbcs_to_utf8(CC_IDENT).data());
+#else
+    av_log(NULL, level, "%sbuilt with %s\n", indent, CC_IDENT);
+#endif
 
     av_log(NULL, level, "%sconfiguration: " FFMPEG_CONFIGURATION "\n", indent);
 }
@@ -1815,7 +1820,7 @@ int opt_default(void* optctx, const char* opt, const char* arg)
 #if CONFIG_AVRESAMPLE
     if ((o = opt_find(&rc, opt, NULL, 0,
                       AV_OPT_SEARCH_CHILDREN | AV_OPT_SEARCH_FAKE_OBJ))) {
-        av_dict_set(&resample_opts, opt, arg, FLAGS);
+        av_dict_set(&g_cmdutil_resource.resample_opts, opt, arg, FLAGS);
         consumed = 1;
     }
 #endif
