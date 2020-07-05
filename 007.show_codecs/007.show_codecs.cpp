@@ -1,3 +1,10 @@
+/*
+
+equals to call `ffmpeg -codecs`
+
+*/
+
+
 #pragma warning(disable:4996) // ignore `av_codec_next` was declared deprecated
 
 extern "C" {
