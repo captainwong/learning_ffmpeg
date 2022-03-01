@@ -6,6 +6,10 @@
 #include <stdint.h>
 #include "IVideoCall.h"
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 class xdemuxer;
 class xaudiodecoderthread;
 class xvideodecoderthread;
@@ -38,3 +42,7 @@ protected:
 	xvideodecoderthread* vdt_ = nullptr;
 	xaudiodecoderthread* adt_ = nullptr;
 };
+
+}
+}
+}

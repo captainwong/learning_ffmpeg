@@ -4,6 +4,11 @@
 #include <stdint.h>
 
 struct AVCodecParameters;
+
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 class xaudioplayer;
 class xresampler;
 
@@ -15,7 +20,7 @@ public:
 
 	bool open(AVCodecParameters* param, int sampleRate, int channels);
 	int64_t pts() const { return pts_; }
-	
+
 	virtual void close() override;
 	virtual void clear() override;
 	virtual void pause(bool isPause) override;
@@ -29,3 +34,7 @@ protected:
 	//! 当前音频播放的PTS
 	int64_t pts_ = 0;
 };
+
+}
+}
+}

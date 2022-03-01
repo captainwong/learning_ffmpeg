@@ -1,10 +1,14 @@
 #pragma once
 
+#include <mutex>
+
 struct AVCodecParameters;
 struct AVFrame;
 struct SwrContext;
 
-#include <mutex>
+namespace jlib {
+namespace qt {
+namespace xplayer {
 
 class xresampler
 {
@@ -36,3 +40,7 @@ protected:
 	SwrContext* context_{ nullptr };
 	int outFormat_ = 1; // AV_SAMPLE_FMT_S16
 };
+
+}
+}
+}

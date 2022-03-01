@@ -5,6 +5,10 @@
 #include "xdecoder.h"
 
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 xdemuxerthread::xdemuxerthread()
 	: QThread()
 {
@@ -21,19 +25,27 @@ bool xdemuxerthread::open(const char* url, IVideoCall* call)
 	if (!url || url[0] == '\0') { return false; }
 	std::lock_guard<std::mutex> lg(mutex_);
 	if (!demuxer_) { demuxer_ = new xdemuxer(); }
-	if (!vdt_) { vdt_ = new xvideodecoderthread(); }
-	if (!adt_) { adt_ = new xaudiodecoderthread(); }
 
 	bool ret = demuxer_->open(url);
 	if (!ret) { return false; }
 	totalMs_ = demuxer_->totalMs();
-	if (!vdt_->open(demuxer_->getVideoParam(), call, demuxer_->width(), demuxer_->height())) {
-		ret = false;
-	}
-	if (!adt_->open(demuxer_->getAudioParam(), demuxer_->sampleRate(), demuxer_->channels())) {
-		ret = false;
+
+	ret = false;
+	if (demuxer_->hasVideo()) {
+		if (!vdt_) { vdt_ = new xvideodecoderthread(); }
+		if (vdt_->open(demuxer_->getVideoParam(), call, demuxer_->width(), demuxer_->height())) {
+			ret = true;
+		}
 	}
 
+	if (demuxer_->hasAudio()) {
+		if (!adt_) { adt_ = new xaudiodecoderthread(); }
+		if (adt_->open(demuxer_->getAudioParam(), demuxer_->sampleRate(), demuxer_->channels())) {
+			ret = true;
+		}
+	}
+
+	isExit_ = !ret;
 	return ret;
 }
 
@@ -43,9 +55,9 @@ void xdemuxerthread::start()
 	if (!demuxer_) { demuxer_ = new xdemuxer(); }
 	if (!vdt_) { vdt_ = new xvideodecoderthread(); }
 	if (!adt_) { adt_ = new xaudiodecoderthread(); }
-	QThread::start();
 	if (vdt_) { vdt_->start(); }
 	if (adt_) { adt_->start(); }
+	QThread::start();
 }
 
 void xdemuxerthread::clear()
@@ -102,7 +114,7 @@ void xdemuxerthread::pause(bool isPause)
 		if (adt_) { adt_->pause(isPause); }
 		if (vdt_) { vdt_->pause(isPause); }
 		//printf("xdemuxerthread::pause leave\n");
-	}	
+	}
 }
 
 void xdemuxerthread::run()
@@ -121,7 +133,7 @@ void xdemuxerthread::run()
 			msleep(5);
 			continue;
 		}
-		
+
 		std::lock_guard<std::mutex> lg(mutex_);
 		if (!demuxer_) {
 			shouldSleep = true;
@@ -153,4 +165,8 @@ void xdemuxerthread::run()
 			}
 		}
 	}
+}
+
+}
+}
 }

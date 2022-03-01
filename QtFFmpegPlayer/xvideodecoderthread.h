@@ -6,6 +6,11 @@
 
 struct AVPacket;
 struct AVCodecParameters;
+
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 class xdecoder;
 
 class xvideodecoderthread : public xdecoderthread
@@ -29,3 +34,7 @@ protected:
 	std::mutex vmutex_{};
 	std::atomic<int64_t> syncPts_{ 0 };
 };
+
+}
+}
+}

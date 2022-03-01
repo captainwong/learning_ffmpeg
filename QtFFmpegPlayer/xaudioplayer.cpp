@@ -3,6 +3,10 @@
 #include <QAudioOutput>
 #include <mutex>
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 class qaudioplayer : public xaudioplayer
 {
 public:
@@ -94,4 +98,8 @@ xaudioplayer* xaudioplayer::instance()
 }
 
 
+
+}
+}
+}
 

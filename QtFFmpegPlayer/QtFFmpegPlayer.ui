@@ -71,7 +71,7 @@
   <customwidget>
    <class>XVideoWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header>XVideoWidget.h</header>
+   <header location="global">XVideoWidget.h</header>
   </customwidget>
   <customwidget>
    <class>XSlider</class>

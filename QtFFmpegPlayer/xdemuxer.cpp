@@ -11,6 +11,10 @@ extern "C" {
 #pragma comment(lib, "avcodec.lib")
 #pragma comment(lib, "avutil.lib")
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 static double r2d(AVRational r) {
 	return r.den == 0.0 ? 0.0 : (double)r.num / (double)r.den;
 }
@@ -108,7 +112,7 @@ AVPacket* xdemuxer::read()
 		if (ret != 0) {
 			char buf[AV_ERROR_MAX_STRING_SIZE];
 			av_strerror(ret, buf, sizeof(buf) - 1);
-			fprintf(stderr, "Read frame failed: %s\n", buf);
+			//fprintf(stderr, "Read frame failed: %s\n", buf);
 			break;
 		}
 
@@ -147,7 +151,7 @@ bool xdemuxer::isAudio(AVPacket* pkt)
 AVCodecParameters* xdemuxer::getVideoParam()
 {
 	std::lock_guard<std::mutex> lg(mutex_);
-	if (ic_) {
+	if (ic_ && videoStream_ >= 0) {
 		auto param = avcodec_parameters_alloc();
 		avcodec_parameters_copy(param, ic_->streams[videoStream_]->codecpar);
 		return param;
@@ -158,7 +162,7 @@ AVCodecParameters* xdemuxer::getVideoParam()
 AVCodecParameters* xdemuxer::getAudioParam()
 {
 	std::lock_guard<std::mutex> lg(mutex_);
-	if (ic_) {
+	if (ic_ && audioStream_ >= 0) {
 		auto param = avcodec_parameters_alloc();
 		avcodec_parameters_copy(param, ic_->streams[audioStream_]->codecpar);
 		return param;
@@ -180,4 +184,8 @@ bool xdemuxer::seek(double pos)
 		return false;
 	}
 	return true;
+}
+
+}
+}
 }

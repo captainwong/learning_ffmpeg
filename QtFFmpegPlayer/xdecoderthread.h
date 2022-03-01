@@ -6,6 +6,11 @@
 #include <atomic>
 
 struct AVPacket;
+
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 class xdecoder;
 
 class xdecoderthread : public QThread
@@ -28,3 +33,7 @@ protected:
 	std::atomic_bool isExit_{ false };
 	std::atomic_bool isPaused_{ false };
 };
+
+}
+}
+}

@@ -9,6 +9,10 @@ extern "C" {
 
 #pragma comment(lib, "swresample.lib")
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 xresampler::xresampler()
 {
 }
@@ -68,4 +72,8 @@ void xresampler::close()
 	if (context_) {
 		swr_free(&context_);
 	}
+}
+
+}
+}
 }

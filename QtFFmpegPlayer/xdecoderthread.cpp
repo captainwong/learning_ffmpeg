@@ -1,6 +1,10 @@
 #include "xdecoderthread.h"
 #include "xdecoder.h"
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 xdecoderthread::xdecoderthread()
 	: QThread()
 	, decoder_(new xdecoder())
@@ -62,4 +66,8 @@ void xdecoderthread::pause(bool isPause)
 	//printf("xdecoderthread::pause enter\n");
 	isPaused_ = isPause;
 	//printf("xdecoderthread::pause leave\n");
+}
+
+}
+}
 }

@@ -8,6 +8,10 @@ struct AVCodecParameters;
 struct AVFrame;
 struct AVPacket;
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 /**
 * Ω‚∏Ò Ω
 */
@@ -47,4 +51,8 @@ protected:
 	AVCodecContext* context_ = nullptr;
 	int64_t pts_ = 0;
 };
+
+}
+}
+}
 

@@ -1,6 +1,10 @@
 #include "xvideodecoderthread.h"
 #include "xdecoder.h"
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 xvideodecoderthread::xvideodecoderthread()
 	: xdecoderthread()
 {
@@ -78,6 +82,7 @@ void xvideodecoderthread::run()
 		while (!isExit_) {
 			AVFrame* frame = decoder_->recv();
 			if (!frame) { break; }
+
 			if (call_) {
 				call_->doRepaint(frame);
 			} else {
@@ -85,4 +90,8 @@ void xvideodecoderthread::run()
 			}
 		}
 	}
+}
+
+}
+}
 }

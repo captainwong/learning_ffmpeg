@@ -8,7 +8,7 @@
 
 struct AVFrame;
 
-class XVideoWidget : public QOpenGLWidget, protected QOpenGLFunctions, public IVideoCall
+class XVideoWidget : public QOpenGLWidget, protected QOpenGLFunctions, public jlib::qt::xplayer::IVideoCall
 {
 	Q_OBJECT
 

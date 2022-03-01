@@ -6,6 +6,10 @@ struct AVCodecParameters;
 struct AVFormatContext;
 struct AVPacket;
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 /**
 * 解封装
 */
@@ -71,6 +75,10 @@ public:
 	//! 音频通道数
 	int channels() const { return channels_; }
 
+
+	bool hasVideo() const { return videoStream_ >= 0; }
+	bool hasAudio() const { return audioStream_ >= 0; }
+
 protected:
 	std::mutex mutex_ = {};
 	AVFormatContext* ic_ = nullptr;
@@ -87,3 +95,7 @@ protected:
 	//! 音频通道数
 	int channels_ = 0;
 };
+
+}
+}
+}

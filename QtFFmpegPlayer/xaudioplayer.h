@@ -2,6 +2,10 @@
 
 #include <stdint.h>
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 class xaudioplayer
 {
 public:
@@ -27,3 +31,7 @@ protected:
 	int sampleSize_ = 16;
 	int channels_ = 2;
 };
+
+}
+}
+}

@@ -105,3 +105,32 @@ apt install libasound2-dev
 
     `ffplay -pix_fmt yuv420p -s 800x600 xyj.rgb`
 
+### 批量转换技巧
+
+1. 批量转换 `ogg` 到 `mp4`
+
+    希望将当前目录下的所有 `ogg` 视频转换为 `mp4` 格式（不删除原文件），可以使用脚本：
+    ```bash
+    #/bin/bash
+    for f in *.ogg; do
+    file="${f##*/}"
+    out="${file%.Ogg}".mp4
+    echo "file=$file, out=$out"
+    ffmpeg.exe -i $file $out
+    done
+    ```
+
+2. 批量转换 `mp3` 到 `ogg`
+
+    假设有 `/music/mp3` 文件夹存放 `mp3` 音频，希望将这些音频文件批量转换为 `ogg` 格式（不删除原文件）并存储到 `/music/ogg`文件夹内（保持文件名不变，将后缀改为 `ogg`），可以用命令：
+    ```bash
+    find /music/mp3 -iname "*.mp3" -print0 | xargs -0 -i --max-procs 0 sh -c 'ffmpeg.exe -hide_banner -y -loglevel warning -i "{}" "/music/ogg/`basename "{}" .mp3`.ogg"'
+    ```
+
+    **xargs 参数**
+    * -0
+
+        文件名可能有空格，因此使用 `-0` 告诉 `xargs` 该参数以 `null` 结尾
+    * --max-procs 0
+
+        不限制最大进程数，尽可能压榨CPU。毕竟是小文件，瓶颈不在文件 `IO` 而在 `CPU`。当然如果处理视频文件单进程跑就行了。

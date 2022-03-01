@@ -4,7 +4,7 @@
 #include <QMessageBox>
 #include "xdemuxerthread.h"
 
-static xdemuxerthread dt{};
+static jlib::qt::xplayer::xdemuxerthread dt{};
 
 QtFFmpegPlayer::QtFFmpegPlayer(QWidget *parent)
 	: QWidget(parent)
@@ -40,7 +40,7 @@ void QtFFmpegPlayer::resizeEvent(QResizeEvent* e)
 	ui.slider->resize(width() - 100, ui.slider->height());
 	ui.pushButtonOpenFile->move(100, height() - 100);
 	ui.pushButtonPlayPause->move(ui.pushButtonOpenFile->x() + ui.pushButtonOpenFile->width() + 10, ui.pushButtonOpenFile->y());
-	ui.openGLWidget->resize(size());
+	//ui.openGLWidget->resize(size());
 }
 
 void QtFFmpegPlayer::mouseDoubleClickEvent(QMouseEvent* e)

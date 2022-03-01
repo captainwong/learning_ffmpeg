@@ -3,6 +3,10 @@
 #include "xaudioplayer.h"
 #include "xdecoder.h"
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 xaudiodecoderthread::xaudiodecoderthread()
 {
 	resampler_ = new xresampler();
@@ -121,4 +125,8 @@ void xaudiodecoderthread::run()
 	}
 
 	delete[] pcm;
+}
+
+}
+}
 }

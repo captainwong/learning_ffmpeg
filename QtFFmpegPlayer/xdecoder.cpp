@@ -9,6 +9,10 @@ extern "C" {
 }
 
 
+namespace jlib {
+namespace qt {
+namespace xplayer {
+
 xdecoder::xdecoder()
 {
 }
@@ -110,6 +114,7 @@ AVFrame* xdecoder::recv()
 		av_frame_free(&frame);
 	} else {
 		pts_ = frame->pts;
+		printf("pts=%lld\n", pts_);
 	}
 	return frame;
 }
@@ -130,4 +135,8 @@ void xdecoder::close()
 		avcodec_free_context(&context_);
 	}
 	pts_ = 0;
+}
+
+}
+}
 }
