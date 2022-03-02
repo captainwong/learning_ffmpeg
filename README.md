@@ -124,7 +124,7 @@ apt install libasound2-dev
 
     假设有 `/music/mp3` 文件夹存放 `mp3` 音频，希望将这些音频文件批量转换为 `ogg` 格式（不删除原文件）并存储到 `/music/ogg`文件夹内（保持文件名不变，将后缀改为 `ogg`），可以用命令：
     ```bash
-    find /music/mp3 -iname "*.mp3" -print0 | xargs -0 -i --max-procs 0 sh -c 'ffmpeg.exe -hide_banner -y -loglevel warning -i "{}" "/music/ogg/`basename "{}" .mp3`.ogg"'
+    find /music/mp3 -iname "*.mp3" -print0 | xargs -0 -i --max-procs 0 sh -c 'ffmpeg.exe -hide_banner -y -loglevel warning -vn -i "{}" "/music/ogg/`basename "{}" .mp3`.ogg"'
     ```
 
     **xargs 参数**
@@ -134,3 +134,9 @@ apt install libasound2-dev
     * --max-procs 0
 
         不限制最大进程数，尽可能压榨CPU。毕竟是小文件，瓶颈不在文件 `IO` 而在 `CPU`。当然如果处理视频文件单进程跑就行了。
+
+    **ffmpeg 参数**
+    * -vn
+
+        有些mp3有封面，不加 `-vn` 则生成的 `ogg` 会带有视频信息，导致 `欧卡2` 的音乐播放器播不出来。。。
+
