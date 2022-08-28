@@ -40,7 +40,6 @@ int main(int argc, char** argv)
 	const auto infile = argv[1];
 	int file_limit = atoi(argv[2]);
 	if (file_limit < 0) { usage(argv[0]); return 1; }
-	else if (file_limit == 0) { file_limit = -1; }
 	AVPixelFormat out_pixel_fmt = AV_PIX_FMT_NONE;
 	const char* outfile_ext = nullptr;
 	if (0 == strcmp("ppm", argv[3])) {
@@ -59,7 +58,7 @@ int main(int argc, char** argv)
 
 	printf("Extracting images from '%s', max images is %s, out file format is %s, ext is %s\n", 
 		   infile, 
-		   file_limit < 0 ? "unlimited" : argv[2], 
+		   file_limit == 0 ? "unlimited" : argv[2], 
 		   argv[3], 
 		   outfile_ext);
 
@@ -114,7 +113,7 @@ int main(int argc, char** argv)
 											nullptr);
 
 	// read frames and save first five frames to disk
-	AVPacket packet;
+	AVPacket packet; ;
 	while (av_read_frame(fmtContext, &packet) >= 0) {
 		if (packet.stream_index == videoStream) {
 			// decode video frame
@@ -135,12 +134,13 @@ int main(int argc, char** argv)
 				}
 
 				if (ret >= 0) {
+					printf("frame%d%s\n", ++count, frame->key_frame ? "...key" : "");
 					// convert the image from its native format to RGB
 					sws_scale(swsContext,
 							  frame->data, frame->linesize,
 							  0, codecContext->height,
 							  frameRGB->data, frameRGB->linesize);
-					if (++count <= 5) {
+					if (file_limit == 0 || count <= file_limit) {
 						saveFrame(frameRGB, codecContext->width, codecContext->height, count);
 					} else {
 						break;
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 				}
 			}
 
-			if (count >= 5) {
+			if (file_limit > 0 && count >= file_limit) {
 				break;
 			}
 		}

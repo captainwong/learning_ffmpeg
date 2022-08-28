@@ -52,6 +52,16 @@ apt install libasound2-dev
 
 ## FFmpeg转码命令笔记
 
+### 图片提取
+
+1. 提取所有 `I帧`
+
+```bash
+ffmpeg -i input.mp4 -f image2 -vf "select='eq(pict_type,PICT_TYPE_I)'" -vsync vfr %d.png
+```
+
+
+
 ### 音频提取、播放
 
 1. AAC
