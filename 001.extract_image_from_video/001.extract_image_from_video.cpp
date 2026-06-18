@@ -141,7 +141,8 @@ int main(int argc, char** argv)
 							  0, codecContext->height,
 							  frameRGB->data, frameRGB->linesize);
 					if (file_limit == 0 || count <= file_limit) {
-						saveFrame(frameRGB, codecContext->width, codecContext->height, count);
+						if (frame->key_frame)
+							saveFrame(frameRGB, codecContext->width, codecContext->height, count);
 					} else {
 						break;
 					}

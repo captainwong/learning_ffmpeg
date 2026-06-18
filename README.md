@@ -66,15 +66,19 @@ ffmpeg -i input.mp4 -f image2 -vf "select='eq(pict_type,PICT_TYPE_I)'" -vsync vf
 
 1. AAC
     
-    `ffmpeg -i xyj.mkv -acodec aac -vn xyj.aac`
+    `ffmpeg -i video.mkv -acodec aac -vn audio.aac`
 
 2. MP3
 
-    `ffmpeg -i xyj.mkv -acodec mp3 -vn xyj.mp3`
+    `ffmpeg -i video.mkv -acodec mp3 -vn audio.mp3`
+
+    or 
+
+    `ffmpeg -i video.mp4 -q:a 0 -map a audio.mp3`
 
 4. PCM
 
-    `ffmpeg -i xyj.mkv -vn -ar 44100 -ac 2 -f s16le xyj.pcm`
+    `ffmpeg -i video.mkv -vn -ar 44100 -ac 2 -f s16le audio.pcm`
 
     ```txt
     -ar 44100: sample rate 44100
@@ -82,7 +86,7 @@ ffmpeg -i input.mp4 -f image2 -vf "select='eq(pict_type,PICT_TYPE_I)'" -vsync vf
     -f s16le: signed integer, 16bit , little endien
     ```
 
-    `ffplay -ar 44100 -ac 2 -f s16le xyj.pcm`
+    `ffplay -ar 44100 -ac 2 -f s16le audio.pcm`
 
     如果不指定 sample rate 和 channels ，播放出来有杂音
 
@@ -91,13 +95,13 @@ ffmpeg -i input.mp4 -f image2 -vf "select='eq(pict_type,PICT_TYPE_I)'" -vsync vf
 
 1. H264
 
-    `ffmpeg -i xyj.mkv -f h264 -bsf: h264_mp4toannexb xyj.h264`
+    `ffmpeg -i video.mkv -f h264 -bsf: h264_mp4toannexb video.h264`
 
-    `ffplay xyj.h264`
+    `ffplay video.h264`
 
 2. YUV
 
-    `ffmpeg -t 00:00:10 -i xyj.mkv -an -f rawvideo -pix_fmt yuv420p -s 800x600 xyj.yuv`
+    `ffmpeg -t 00:00:10 -i video.mkv -an -f rawvideo -pix_fmt yuv420p -s 800x600 video.yuv`
 
     ```txt
     -t 00:00:10: 提取前10秒
@@ -107,13 +111,13 @@ ffmpeg -i input.mp4 -f image2 -vf "select='eq(pict_type,PICT_TYPE_I)'" -vsync vf
     -s 800x600: 视频宽高800x600，如果不指定大小，等会没法播放：两边都-s 800x600才能正确播放
     ```
 
-    `ffplay -pix_fmt yuv420p -s 800x600 xyj.yuv`
+    `ffplay -pix_fmt yuv420p -s 800x600 video.yuv`
 
 3. RGB
 
-    `ffmpeg -t 00:00:10 -i xyj.mkv -an -f rawvideo -pix_fmt rgb24 -s 800x600 xyj.rgb`
+    `ffmpeg -t 00:00:10 -i video.mkv -an -f rawvideo -pix_fmt rgb24 -s 800x600 video.rgb`
 
-    `ffplay -pix_fmt yuv420p -s 800x600 xyj.rgb`
+    `ffplay -pix_fmt yuv420p -s 800x600 video.rgb`
 
 ### 批量转换技巧
 
@@ -138,14 +142,17 @@ ffmpeg -i input.mp4 -f image2 -vf "select='eq(pict_type,PICT_TYPE_I)'" -vsync vf
     ```
 
     **xargs 参数**
+    
     * -0
 
         文件名可能有空格，因此使用 `-0` 告诉 `xargs` 该参数以 `null` 结尾
+
     * --max-procs 0
 
         不限制最大进程数，尽可能压榨CPU。毕竟是小文件，瓶颈不在文件 `IO` 而在 `CPU`。当然如果处理视频文件单进程跑就行了。
 
     **ffmpeg 参数**
+
     * -vn
 
         有些mp3有封面，不加 `-vn` 则生成的 `ogg` 会带有视频信息，导致 `欧卡2` 的音乐播放器播不出来。。。

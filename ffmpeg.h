@@ -18,7 +18,7 @@ extern "C" {
 #include "libavutil/imgutils.h"
 }
 
-#define FFMPEG_LIB_PATH R"(E:\dev_ffmpeg\ffmpeg-20200311-36aaee2-win32-dev\lib\)"
+#define FFMPEG_LIB_PATH R"(H:\dev_ffmpeg\ffmpeg-20200311-36aaee2-win32-dev\lib\)"
 
 // According to http://ffmpeg.org/faq.html
 // You must specify the libraries in dependency order:
